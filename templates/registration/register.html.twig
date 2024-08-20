@@ -1,18 +1,28 @@
 {% extends 'base.html.twig' %}
 
+{% form_theme registrationForm 'themes/form_theme.html.twig' %}
+
 {% block title %}Register{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+    <div class="CB-form-container">
+        <h1>Register</h1>
 
-    {{ form_errors(registrationForm) }}
+        {{ form_errors(registrationForm) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
+        {{ form_start(registrationForm) }}
+            {{ form_row(registrationForm.email, {
+                label: 'Email',
+                attr: { class: 'form-control' },
+                label_attr: { class: 'form-label' },
+            }) }}
+            {{ form_row(registrationForm.plainPassword, {
+                label: 'Password',
+                attr: { class: 'form-control' },
+                label_attr: { class: 'form-label' },
+            }) }}
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+            <button type="submit" class="btn btn-primary">Register</button>
+        {{ form_end(registrationForm) }}
+    </div>
 {% endblock %}

@@ -1,0 +1,8 @@
+.CB-form-container {
+    max-width: 500px;
+    border-radius: 8px;
+    @extend .mx-auto;
+    @extend .my-5;
+    @extend .p-3;
+    @extend .bg-light;
+}

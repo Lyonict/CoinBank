@@ -1,7 +1,16 @@
+{% block form_errors %}
+    {% if errors|length %}
+        <div class="alert alert-danger">
+            {% for error in errors %}
+                <li class="is-invalid">{{ error.message }}</li>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock form_errors %}
+
 {% block form_row %}
     <div class="mb-3">
         {{ form_label(form) }}
         {{ form_widget(form) }}
-        {{ form_errors(form) }}
     </div>
 {% endblock %}

@@ -11,13 +11,24 @@
         {{ form_errors(registrationForm) }}
 
         {{ form_start(registrationForm) }}
+
             {{ form_row(registrationForm.email, {
                 label: 'Email',
                 attr: { class: 'form-control' },
                 label_attr: { class: 'form-label' },
             }) }}
-            {{ form_row(registrationForm.plainPassword, {
+            {{ form_row(registrationForm.username, {
+                label: 'Username',
+                attr: { class: 'form-control' },
+                label_attr: { class: 'form-label' },
+            }) }}
+            {{ form_row(registrationForm.plainPassword.first, {
                 label: 'Password',
+                attr: { class: 'form-control' },
+                label_attr: { class: 'form-label' },
+            }) }}
+            {{ form_row(registrationForm.plainPassword.second, {
+                label: 'Confirm password',
                 attr: { class: 'form-control' },
                 label_attr: { class: 'form-label' },
             }) }}

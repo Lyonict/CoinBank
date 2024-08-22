@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -32,16 +33,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @var string The hashed password
-     * La contrainte Regex valide que le mot de passe :
-     * * contient au moins un chiffre
-     * * contient au moins une lettre en minuscule
-     * * contient au moins une lettre en majuscule
-     * * contient au moins un caractère spécial qui n'est pas un espace
-     * * fait entre 8 et 32 caractères de long
      */
     #[Assert\NotCompromisedPassword()]
-    #[Assert\PasswordStrength(minScore: Assert\PasswordStrength::STRENGTH_STRONG)]
-    #[Assert\Regex('/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.*\s).{8,32}$/')]
     #[ORM\Column]
     private ?string $password = null;
 

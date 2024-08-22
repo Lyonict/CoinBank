@@ -49,6 +49,8 @@ class RegistrationFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'password_min_length' => 8,
+            'password_max_length' => 32,
         ]);
     }
 }

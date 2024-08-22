@@ -17,7 +17,13 @@ class RegistrationController extends AbstractController
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
+        $passwordMinLength = 8;
+        $passwordMaxLength = 32;
+
+        $form = $this->createForm(RegistrationFormType::class, $user, [
+            'password_min_length' => $passwordMinLength,
+            'password_max_length' => $passwordMaxLength,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -39,6 +45,8 @@ class RegistrationController extends AbstractController
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
+            'password_min_length' => $passwordMinLength,
+            'password_max_length' => $passwordMaxLength,
         ]);
     }
 }

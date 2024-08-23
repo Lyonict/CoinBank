@@ -1,3 +1,4 @@
+import "./vendor/@hotwired/turbo/turbo.index.js";
 import './bootstrap.js';
 /*
  * Welcome to your app's main JavaScript file!
@@ -7,4 +8,4 @@ import './bootstrap.js';
  */
 import './vendor/bootstrap/bootstrap.index.js';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+import './form.js';

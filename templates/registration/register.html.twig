@@ -2,47 +2,47 @@
 
 {% form_theme registrationForm 'themes/form_theme.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}{{'Register'|trans}}{% endblock %}
 
 {% block body %}
     <div class="CB-form-container">
-        <h1>Register</h1>
+        <h1>{{'Register'|trans}}</h1>
 
         {{ form_errors(registrationForm) }}
 
         {{ form_start(registrationForm , {
-            attr : {id:'CB-register-form', class: 'needs-validation', novalidate: "novalidate"}
+            attr : {id:'CB-Register-form', class: 'needs-validation', novalidate: "novalidate"}
         }) }}
             {{ form_row(registrationForm.email, {
-                label: 'Email',
+                label: 'Email'|trans,
                 attr: { class: 'form-control' },
                 label_attr: { class: 'form-label' },
             }) }}
             {{ form_row(registrationForm.username, {
-                label: 'Username',
+                label: 'Username'|trans,
                 attr: { class: 'form-control' },
                 label_attr: { class: 'form-label' },
             }) }}
             {{ form_row(registrationForm.plainPassword.first, {
-                label: 'Password',
+                label: 'Password'|trans,
                 attr: {class: 'form-control' },
                 label_attr: { class: 'form-label' },
             }) }}
             <ul>
-                <li class="CB-checkpassword-condition" id="check-password-length" class="small">Your password should be between {{password_min_length}} and {{password_max_length}} characters</li>
-                <li class="CB-checkpassword-condition" id="check-password-number" class="small">Your password must contain at least 1 digit</li>
-                <li class="CB-checkpassword-condition" id="check-password-lowercase" class="small">Your password must contain at least 1 lowercase letter</li>
-                <li class="CB-checkpassword-condition" id="check-password-uppercase" class="small">Your password must contain at least 1 uppercase letter</li>
-                <li class="CB-checkpassword-condition" id="check-password-special" class="small">Your password must contain at least 1 special character</li>
-                <li class="CB-checkpassword-condition" id="check-password-match" class="small">The password and confirm password fields must match</li>
+                <li class="CB-checkpassword-condition" id="check-password-length" class="small">{{ 'Your password must be between %min% and %max% characters'|trans({'%min%': password_min_length, '%max%': password_max_length})}}</li>
+                <li class="CB-checkpassword-condition" id="check-password-number" class="small">{{'Your password must contain at least 1 digit'|trans}}</li>
+                <li class="CB-checkpassword-condition" id="check-password-lowercase" class="small">{{'Your password must contain at least 1 lowercase letter'|trans}}</li>
+                <li class="CB-checkpassword-condition" id="check-password-uppercase" class="small">{{'Your password must contain at least 1 uppercase letter'|trans}}</li>
+                <li class="CB-checkpassword-condition" id="check-password-special" class="small">{{'Your password must contain at least 1 special character'|trans}}</li>
+                <li class="CB-checkpassword-condition" id="check-password-match" class="small">{{'Your passwords do not match'|trans}}</li>
             </ul>
             {{ form_row(registrationForm.plainPassword.second, {
-                label: 'Confirm password',
+                label: 'Confirm Password'|trans,
                 attr: { class: 'form-control' },
                 label_attr: { class: 'form-label' },
             }) }}
 
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-primary">{{'Send'|trans}}</button>
         {{ form_end(registrationForm) }}
     </div>
 {% endblock %}

@@ -1,0 +1,47 @@
+Send:
+  "Envoyer"
+
+Register:
+  "Inscription"
+
+Email:
+  "Email"
+
+Username:
+  "Nom d'utilisateur"
+
+Password:
+  "Mot de passe"
+
+Confirm Password:
+  "Confirmer le mot de passe"
+
+"Your password must be between %min% and %max% characters":
+  Votre mot de passe doit contenir entre %min% et %max% caractères
+
+Your password must contain at least 1 digit:
+  Votre mot de passe doit contenir au moins 1 chiffre
+
+Your password must contain at least 1 lowercase letter:
+  Votre mot de passe doit contenir au moins 1 lettre minuscule
+
+Your password must contain at least 1 uppercase letter:
+  Votre mot de passe doit contenir au moins 1 lettre majuscule
+
+Your password must contain at least 1 special character:
+  Votre mot de passe doit contenir au moins 1 caractère spécial
+
+Your passwords do not match:
+  Vos mots de passe ne correspondent pas
+
+Please sign in:
+  Veuillez vous connecter
+
+Login:
+  Connexion
+
+No account yet?:
+  Pas encore de compte ?
+
+Create one:
+  En créer un

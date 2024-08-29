@@ -1,47 +1,19 @@
-Send:
-  "Send"
-
-Register:
-  "Register"
-
-Email:
-  "Email"
-
-Username:
-  "Username"
-
-Password:
-  "Password"
-
-Confirm Password:
-  "Confirm Password"
-
-"Your password must be between %min% and %max% characters":
-  "Your password must be between %min% and %max% characters"
-
-Your password must contain at least 1 digit:
-  Your password must contain at least 1 digit
-
-Your password must contain at least 1 lowercase letter:
-  Your password must contain at least 1 lowercase letter
-
-Your password must contain at least 1 uppercase letter:
-  Your password must contain at least 1 uppercase letter
-
-Your password must contain at least 1 special character:
-  Your password must contain at least 1 special character
-
-Your passwords do not match:
-  Your passwords do not match
-
-Please sign in:
-  Please sign in
-
-Login:
-  Login
-
-No account yet?:
-  No account yet?
-
-Create one:
-  Create one
+Send: Send
+Register: Register
+Email: Email
+Username: Username
+Password: Password
+Confirm Password: Confirm Password
+Your password must be between %min% and %max% characters: Your password must be between %min% and %max% characters
+Your password must contain at least 1 digit: Your password must contain at least 1 digit
+Your password must contain at least 1 lowercase letter: Your password must contain at least 1 lowercase letter
+Your password must contain at least 1 uppercase letter: Your password must contain at least 1 uppercase letter
+Your password must contain at least 1 special character: Your password must contain at least 1 special character
+Your passwords do not match: Your passwords do not match
+Please sign in: Please sign in
+Login: Login
+No account yet?: No account yet?
+Create one: Create one
+The password fields must match.: The password fields must match.
+Please enter a password: Please enter a password
+Your password is not strong enough.: Your password is not strong enough.

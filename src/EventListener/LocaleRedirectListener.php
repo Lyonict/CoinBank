@@ -32,21 +32,31 @@ final class LocaleRedirectListener
             return;
         }
 
-        // CHeck if locale is present in the URL
+        // Check if locale is present in the URL
         if (!preg_match('/^\/(en|fr)(\/|$)/', $pathInfo)) {
             // Determine the preferred locale from the browser
-            $preferredLocale = $this->getPreferredLocale($request->getLanguages());
+            $preferredLocale = $this->getPreferredLocale($request);
+            $request->attributes->set('preferredLocale', $preferredLocale);
 
             // Redirect to the URL with the default locale
             $url = '/' . $preferredLocale . $pathInfo;
             $response = new RedirectResponse($this->normalizeUrl($url));
             $event->setResponse($response);
+        } else {
+            $preferredLocale = $this->getPreferredLocale($request);
         }
+        $request->attributes->set('preferred-locale', $preferredLocale);
     }
 
-    private function getPreferredLocale(array $acceptedLanguages): string
+    private function getPreferredLocale($request): string
     {
-        foreach ($acceptedLanguages as $language) {
+        // Check if the CB-prefered-locale cookie is set. It takes precedence over the browser language
+        $cookieLocale = $request->cookies->get('CB-prefered-locale');
+        if ($cookieLocale && in_array($cookieLocale, $this->supportedLocales)) {
+            return $cookieLocale;
+        }
+
+        foreach ($request->getLanguages() as $language) {
             $locale = substr($language, 0, 2);
             if (in_array($locale, $this->supportedLocales)) {
                 return $locale;

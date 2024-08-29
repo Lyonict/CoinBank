@@ -7,6 +7,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <select id="CB-locale-change-select" class="form-select" aria-label="Default select example">
+                            <option value="fr" {% if app.request.attributes.get('preferred-locale') == 'fr' %}selected{% endif %}>FR</option>
+                            <option value="en" {% if app.request.attributes.get('preferred-locale') == 'en' %}selected{% endif %}>EN</option>
+                        </select>
+                    </li>
                     <li class="nav-item">
                         <a href="{{path("app_login")}}" class="btn btn-outline-primary">{{'Login'|trans}}</a>
                     </li>

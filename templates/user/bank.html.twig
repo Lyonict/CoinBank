@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme bankForm 'themes/form_theme.html.twig' %}
+
+{% block title %}Hello UserController!{% endblock %}
+
+{% block body %}
+    <div class="CB-form-container">
+        <h1>Checkout</h1>
+        {{ form_errors(bankForm) }}
+        {{ form_start(bankForm) }}
+            {{ form_row(bankForm.amount, {
+                label: 'Amount'|trans,
+                attr: { class: 'form-control' },
+                label_attr: { class: 'form-label' },
+            }) }}
+            {{ form_row(bankForm.bankTransactionMode, {
+                label: '',
+                attr: { class: 'form-control' },
+                label_attr: { class: 'form-label' },
+            }) }}
+            <button type="submit" class="btn btn-dark">{{'Proceed'|trans}}</button>
+        {{ form_end(bankForm) }}
+    </div>
+{% endblock %}

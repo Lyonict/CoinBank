@@ -42,6 +42,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 30, unique: true)]
     private ?string $username = null;
 
+    #[Assert\PositiveOrZero()]
+    #[ORM\Column(nullable: true)]
+    private ?float $bank = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -125,6 +129,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUsername(string $username): static
     {
         $this->username = $username;
+
+        return $this;
+    }
+
+    public function getBank(): ?float
+    {
+        return $this->bank;
+    }
+
+    public function setBank(?float $bank): static
+    {
+        $this->bank = $bank;
 
         return $this;
     }

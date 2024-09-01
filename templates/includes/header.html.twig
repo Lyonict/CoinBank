@@ -2,21 +2,30 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" id="mainNav">
         <div class="container px-4">
             <a class="navbar-brand" href='{{path("app_main")}}'>Coinbank</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item me-3">
-                        <select id="CB-locale-change-select" class="form-select" aria-label="Default select example">
-                            <option value="fr" {% if app.request.attributes.get('preferred-locale') == 'fr' %}selected{% endif %}>FR</option>
-                            <option value="en" {% if app.request.attributes.get('preferred-locale') == 'en' %}selected{% endif %}>EN</option>
-                        </select>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{path("app_login")}}" class="btn btn-outline-primary">{{'Login'|trans}}</a>
-                    </li>
-                </ul>
+            <div class="d-block d-lg-flex">
+                <a href="#" class="btn btn-outline-warning me-3">{{ app.user.bank }}$</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse mt-3 mt-lg-0" id="navbarResponsive">
+                    <ul class="navbar-nav align-items-end ms-auto">
+                    {% if is_granted('IS_AUTHENTICATED') %}
+                        <li class="nav-item">
+                            <a href="{{path("app_logout")}}" class="btn btn-outline-secondary">{{'Logout'|trans}}</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item me-3">
+                            <select id="CB-locale-change-select" class="form-select" aria-label="Default select example">
+                                <option value="fr" {% if app.request.attributes.get('preferred-locale') == 'fr' %}selected{% endif %}>FR</option>
+                                <option value="en" {% if app.request.attributes.get('preferred-locale') == 'en' %}selected{% endif %}>EN</option>
+                            </select>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{path("app_login")}}" class="btn btn-outline-primary">{{'Login'|trans}}</a>
+                        </li>
+                    {% endif %}
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>

@@ -1,3 +1,15 @@
+{% block form_success %}
+    {% if app.flashes('success')|length %}
+        <div class="alert alert-success">
+            <ul>
+                {% for message in app.flashes('success') %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block form_errors %}
     {% if errors|length %}
         <div class="alert alert-danger">

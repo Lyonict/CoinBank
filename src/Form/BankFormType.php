@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class BankFormType extends AbstractType
 {
@@ -17,6 +18,10 @@ class BankFormType extends AbstractType
             ->add('amount', NumberType::class, [
                 'mapped' => false,
                 'error_bubbling' => true,
+                'constraints' => [
+                    new Assert\NotBlank(),
+                    new Assert\Positive(),
+                ],
             ])
             ->add('bankTransactionMode', ChoiceType::class, [
                 'mapped' => false,
@@ -25,6 +30,10 @@ class BankFormType extends AbstractType
                     'Withdraw' => 'withdraw',
                 ],
                 'error_bubbling' => true,
+                'constraints' => [
+                    new Assert\NotBlank(),
+                    new Assert\Choice(['deposit', 'withdraw']),
+                ],
             ])
         ;
     }

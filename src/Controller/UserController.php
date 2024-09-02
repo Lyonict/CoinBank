@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
 
-#[IsGranted('IS_AUTHENTICATED')]
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 #[Route('/{_locale}/user')]
 class UserController extends AbstractController
 {
@@ -34,9 +34,16 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $amount = $form->get('amount')->getData();
-            $bankTransactionMode = $form->get('bankTransactionMode')->getData();
-            $userBankService->updateUserBank($user, $amount, $bankTransactionMode);
+            try{
+                $amount = $form->get('amount')->getData();
+                $bankTransactionMode = $form->get('bankTransactionMode')->getData();
+                $userBankService->updateUserBank($user, $amount, $bankTransactionMode);
+                $this->addFlash('success', 'Your bank balance has been updated successfully.');
+            } catch (\InvalidArgumentException $e) {
+                $this->addFlash('error', $e->getMessage());
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'An error occurred while updating your bank balance.');
+            }
 
             return $this->redirectToRoute('app_user_bank');
         }

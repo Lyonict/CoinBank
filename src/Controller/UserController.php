@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Form\BankFormType;
+use App\Service\UserBankService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/bank', name: 'app_user_bank')]
-    public function bank(Request $request, EntityManagerInterface $entityManager): Response
+    public function bank(Request $request, UserBankService $userBankService): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -35,14 +36,8 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $amount = $form->get('amount')->getData();
             $bankTransactionMode = $form->get('bankTransactionMode')->getData();
+            $userBankService->updateUserBank($user, $amount, $bankTransactionMode);
 
-            if ($bankTransactionMode === 'deposit') {
-                $user->setBank($user->getBank() + $amount);
-            } else {
-                $user->setBank($user->getBank() - $amount);
-            }
-
-            $entityManager->flush();
             return $this->redirectToRoute('app_user_bank');
         }
 

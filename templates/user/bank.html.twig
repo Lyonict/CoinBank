@@ -14,18 +14,54 @@
             <div class="alert alert-danger">{{ message }}</div>
         {% endfor %}
         {{ form_errors(bankForm) }}
-        {{ form_start(bankForm) }}
+        {{ form_start(bankForm, {
+            attr : {id:'CB-bank-form'}
+        }) }}
+            {{ form_row(bankForm.cardNumber, {
+                label: 'Card Number'|trans,
+                attr: { class: 'form-control' },
+                label_attr: { class: 'form-label' },
+            }) }}
+            <div class="row">
+                <div class="col-6">
+                    {{ form_row(bankForm.expiryDate, {
+                        label: 'Expiry Date'|trans,
+                        attr: { class: 'form-control' },
+                        label_attr: { class: 'form-label' },
+                    }) }}
+                </div>
+                <div class="col-6">
+                    {{ form_row(bankForm.cvc, {
+                        label: 'CVC'|trans,
+                        attr: { class: 'form-control' },
+                        label_attr: { class: 'form-label' },
+                    }) }}
+                </div>
+            </div>
             {{ form_row(bankForm.amount, {
                 label: 'Amount'|trans,
                 attr: { class: 'form-control' },
                 label_attr: { class: 'form-label' },
             }) }}
-            {{ form_row(bankForm.bankTransactionMode, {
-                label: '',
-                attr: { class: 'form-control' },
-                label_attr: { class: 'form-label' },
-            }) }}
-            <button type="submit" class="btn btn-dark">{{'Proceed'|trans}}</button>
+            <div class="row mb-3">
+                {% for child in bankForm.bankTransactionMode %}
+                    <div class="col-6">
+                        {{ form_widget(child, {
+                        attr: { class: 'btn-check' }
+                        }) }}
+                        {% if child.vars.value == 'deposit' %}
+                            {% set labelContent = '<div class="CB-deposit-icon-wrapper d-flex align-items-center me-2">' ~ ux_icon('fa6-solid:arrow-right-to-bracket') ~ '</div>' %}
+                        {% else %}
+                            {% set labelContent = '<div class="d-flex align-items-center me-2">' ~ ux_icon('fa6-solid:arrow-up-from-bracket') ~ '</div>' %}
+                        {% endif %}
+                        {{ form_label(child, labelContent ~ ' ' ~ child.vars.label, {
+                            label_html: true,
+                            label_attr: { class: 'd-flex justify-content-center btn btn-outline-dark' },
+                        }) }}
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-dark w-100">{{'Proceed'|trans}}</button>
         {{ form_end(bankForm) }}
     </div>
 {% endblock %}

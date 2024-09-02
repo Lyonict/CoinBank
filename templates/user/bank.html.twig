@@ -39,14 +39,14 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-10">
+                <div class="col-12 col-sm-10">
                     {{ form_row(bankForm.amount, {
                         label: 'Amount'|trans,
                         attr: { class: 'form-control' },
                         label_attr: { class: 'form-label' },
                     }) }}
                 </div>
-                <div class="d-flex align-items-end col-2">
+                <div class="d-flex align-items-end col-12 col-sm-2">
                     <button type="button" class="btn btn-outline-dark mb-3 w-100" id="CB-max-amount-btn" data-max-amount="{{ app.user.bank }}">{{'All'|trans}}</button>
                 </div>
             </div>

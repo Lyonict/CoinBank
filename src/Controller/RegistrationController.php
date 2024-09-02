@@ -35,6 +35,10 @@ class RegistrationController extends AbstractController
                 )
             );
 
+            if(!in_array('ROLE_ADMIN', $user->getRoles())){
+                $user->setBank(1000.0);
+            };
+
             $entityManager->persist($user);
             $entityManager->flush();
 

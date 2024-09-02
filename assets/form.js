@@ -77,4 +77,16 @@ document.addEventListener("turbo:load", () => {
     }
     return true;
   };
+
+  // Logic for the max amount button of the bank form
+  const maxAmountBtn = document.getElementById('CB-max-amount-btn');
+  const amountField = document.getElementById('bank_form_amount');
+  const userBank = maxAmountBtn.getAttribute('data-max-amount');
+
+  if(maxAmountBtn && amountField) {
+    maxAmountBtn.addEventListener('click', function () {
+      console.log(userBank);
+        amountField.value = userBank;
+    });
+  };
 })

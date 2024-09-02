@@ -3,13 +3,15 @@
         <div class="container px-4">
             <a class="navbar-brand" href='{{path("app_main")}}'>Coinbank</a>
             <div class="d-block d-lg-flex">
-                <a href="{{path("app_user_bank")}}" class="btn btn-warning me-3">{{ app.user.bank }}$</a>
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <a href="{{path("app_user_bank")}}" class="btn btn-warning me-3">{{ app.user.bank }}$</a>
+                {% endif %}
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse mt-3 mt-lg-0" id="navbarResponsive">
                     <ul class="navbar-nav align-items-end ms-auto">
-                    {% if is_granted('IS_AUTHENTICATED') %}
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li class="nav-item">
                             <a href="{{path("app_logout")}}" class="btn btn-outline-secondary">{{'Logout'|trans}}</a>
                         </li>

@@ -6,7 +6,7 @@
 
 {% block body %}
     <div class="CB-form-container">
-        <h1>Bank Transaction</h1>
+        <h1>{{'Bank Transaction'|trans}}</h1>
         {% for message in app.flashes('success') %}
             <div class="alert alert-success">{{ message }}</div>
         {% endfor %}
@@ -47,7 +47,7 @@
                     }) }}
                 </div>
                 <div class="d-flex align-items-end col-2">
-                    <button type="button" class="btn btn-outline-dark mb-3 w-100" id="CB-max-amount-btn" data-max-amount="{{ app.user.bank }}">All</button>
+                    <button type="button" class="btn btn-outline-dark mb-3 w-100" id="CB-max-amount-btn" data-max-amount="{{ app.user.bank }}">{{'All'|trans}}</button>
                 </div>
             </div>
             <div class="row mb-3">
@@ -58,10 +58,12 @@
                         }) }}
                         {% if child.vars.value == 'deposit' %}
                             {% set labelContent = '<div class="CB-deposit-icon-wrapper d-flex align-items-center me-2">' ~ ux_icon('fa6-solid:arrow-right-to-bracket') ~ '</div>' %}
+                            {% set labelName = 'Deposit'|trans %}
                         {% else %}
                             {% set labelContent = '<div class="d-flex align-items-center me-2">' ~ ux_icon('fa6-solid:arrow-up-from-bracket') ~ '</div>' %}
+                            {% set labelName = 'Withdraw'|trans %}
                         {% endif %}
-                        {{ form_label(child, labelContent ~ ' ' ~ child.vars.label, {
+                        {{ form_label(child, labelContent ~ ' ' ~ labelName, {
                             label_html: true,
                             label_attr: { class: 'd-flex justify-content-center btn btn-outline-dark' },
                         }) }}

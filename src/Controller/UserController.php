@@ -11,11 +11,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 #[Route('/{_locale}/user')]
 class UserController extends AbstractController
 {
+    public function __construct(private readonly TranslatorInterface $translator)
+    {
+    }
+
     #[Route('', name: 'app_user_dashboard')]
     public function index(): Response
     {
@@ -38,11 +43,11 @@ class UserController extends AbstractController
                 $amount = $form->get('amount')->getData();
                 $bankTransactionMode = $form->get('bankTransactionMode')->getData();
                 $userBankService->updateUserBank($user, $amount, $bankTransactionMode);
-                $this->addFlash('success', 'Your bank balance has been updated successfully.');
+                $this->addFlash('success', $this->translator->trans('Your bank balance has been updated successfully.'));
             } catch (\InvalidArgumentException $e) {
                 $this->addFlash('error', $e->getMessage());
             } catch (\Exception $e) {
-                $this->addFlash('error', 'An error occurred while updating your bank balance.');
+                $this->addFlash('error', $this->translator->trans('An error occurred while updating your bank balance.'));
             }
 
             return $this->redirectToRoute('app_user_bank');

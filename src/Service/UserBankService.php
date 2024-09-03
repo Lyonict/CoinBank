@@ -30,6 +30,10 @@ class UserBankService
             throw new \InvalidArgumentException($this->translator->trans('You cannot withdraw more than your current balance.'));
         }
 
+        if($bankTransactionMode === 'deposit' && $amount+$user->getBank() > 100000) {
+            throw new \InvalidArgumentException($this->translator->trans('You cannot deposit more than 100000.'));
+        }
+
         $newBalance = $bankTransactionMode === 'deposit'
         ? $user->getBank() + $amount
         : $user->getBank() - $amount;

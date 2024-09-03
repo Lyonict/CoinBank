@@ -32,3 +32,4 @@ All: All
 Deposit: Deposit
 Withdraw: Withdraw
 'Bank Transaction': 'Bank Transaction'
+'You cannot deposit more than 100000.': 'You cannot deposit more than 100000.'

@@ -81,12 +81,18 @@ document.addEventListener("turbo:load", () => {
   // Logic for the max amount button of the bank form
   const maxAmountBtn = document.getElementById('CB-max-amount-btn');
   const amountField = document.getElementById('bank_form_amount');
-  const userBank = maxAmountBtn.getAttribute('data-max-amount');
+  const depositBtn = document.getElementById('bank_form_bankTransactionMode_0');
+  const withdrawBtn = document.getElementById('bank_form_bankTransactionMode_1');
+  const maxAmountUserCanDeposit = 100000;
 
   if(maxAmountBtn && amountField) {
+    const userBank = maxAmountBtn.getAttribute('data-max-amount');
     maxAmountBtn.addEventListener('click', function () {
-      console.log(userBank);
+      if(depositBtn.checked) {
+        amountField.value = maxAmountUserCanDeposit - userBank;
+      } else if (withdrawBtn.checked) {
         amountField.value = userBank;
+      }
     });
   };
 })

@@ -42,6 +42,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 30, unique: true)]
     private ?string $username = null;
 
+    // Even though the user can only deposit a max of 100000, they are allowed to have more on their account after a sell
+    // So we don't limit the bank here
     #[Assert\PositiveOrZero()]
     #[ORM\Column(nullable: true)]
     private ?float $bank = null;

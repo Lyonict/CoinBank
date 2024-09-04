@@ -1,4 +1,4 @@
-document.addEventListener("turbo:load", () => {
+function initializeFormValidation() {
   (() => {
     'use strict'
 
@@ -20,7 +20,6 @@ document.addEventListener("turbo:load", () => {
 
   const passwordField = document.querySelector('#registration_form_plainPassword_first');
   const confirmPasswordField = document.querySelector('#registration_form_plainPassword_second');
-
 
   const passwordChecks = [
     { field: '#check-password-length', test: value => /^.{8,32}$/.test(value) },
@@ -95,4 +94,27 @@ document.addEventListener("turbo:load", () => {
       }
     });
   };
-})
+};
+
+  // Function to run once per page load
+function runOnce(callback) {
+  if (!runOnce.hasRun) {
+    callback();
+    runOnce.hasRun = true;
+  }
+}
+
+// Handle initial page load and hard refreshes
+document.addEventListener("turbo:load", () => {
+  runOnce(initializeFormValidation);
+});
+
+// Handle Turbo page changes, including form submissions
+document.addEventListener("turbo:render", () => {
+  initializeFormValidation();
+});
+
+// Reset the runOnce flag before unload
+document.addEventListener("turbo:before-cache", () => {
+  runOnce.hasRun = false;
+});

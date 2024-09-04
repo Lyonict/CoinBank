@@ -17,7 +17,7 @@ function setLocaleInCookie(locale) {
   window.location.href = window.location.pathname.replace(/^\/(en|fr)(\/|$)/, '/');
 }
 
-document.addEventListener("turbo:load", () => {
+document.addEventListener("turbo:render", () => {
   // Add locale to cookie if user selects it
   const localeChangeSelect = document.querySelector("#CB-locale-change-select");
   if (localeChangeSelect) {

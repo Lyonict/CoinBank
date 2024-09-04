@@ -1,10 +1,10 @@
 .CB-form-container {
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(md) {
         max-width: 500px;
         border-radius: 8px;
     }
     @extend .mx-auto;
-    @extend .my-sm-5;
+    @extend .my-md-5;
     @extend .p-3;
     @extend .bg-light;
 }

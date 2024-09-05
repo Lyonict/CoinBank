@@ -19,7 +19,7 @@
             </a>
         </li>
         <li>
-            <a href="" class="btn {{ selected == 'profile' ? 'btn-dark' : 'btn-outline-dark' }}">
+            <a href="{{ path('app_user_profile') }}" class="btn {{ selected == 'profile' ? 'btn-dark' : 'btn-outline-dark' }}">
                 {{ ux_icon('iconamoon:profile-fill') }}
                 {{ 'Profile'|trans }}
             </a>
@@ -53,9 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'bank':
                 window.location.href = "{{ path('app_user_bank') }}";
                 break;
-            {# case 'profile':
+            case 'profile':
                 window.location.href = "{{ path('app_user_profile') }}";
-                break; #}
+                break;
         }
     });
 });

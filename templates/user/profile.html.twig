@@ -1,0 +1,15 @@
+{% extends 'user-navigation_base.html.twig' %}
+
+{% block title %}CoinBank - Profile{% endblock %}
+
+{% block user_navigation %}
+    {% with {"selected": "profile"} %}
+        {{ parent() }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+    <div>
+        <h1>{{'Personnal Profile'|trans}}</h1>
+    </div>
+{% endblock %}

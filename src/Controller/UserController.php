@@ -57,4 +57,12 @@ class UserController extends AbstractController
             'bankForm' => $form,
         ]);
     }
+
+    #[Route('/profile', name: 'app_user_profile')]
+    public function profile(): Response
+    {
+        return $this->render('user/profile.html.twig', [
+            'controller_name' => 'UserController',
+        ]);
+    }
 }

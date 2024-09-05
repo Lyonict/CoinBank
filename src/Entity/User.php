@@ -48,6 +48,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?float $bank = null;
 
+    #[ORM\Column(length: 5)]
+    #[Assert\Language()]
+    private ?string $preferedLocale = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -143,6 +147,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setBank(?float $bank): static
     {
         $this->bank = $bank;
+
+        return $this;
+    }
+
+    public function getPreferedLocale(): ?string
+    {
+        return $this->preferedLocale;
+    }
+
+    public function setPreferedLocale(string $preferedLocale): static
+    {
+        $this->preferedLocale = $preferedLocale;
 
         return $this;
     }

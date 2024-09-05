@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use App\Service\LocaleService;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -11,14 +12,12 @@ use Symfony\Component\Routing\RouterInterface;
 final class LocaleRedirectListener
 {
     private $router;
-    private $defaultLocale;
-    private $supportedLocales;
+    private $localeService;
 
-    public function __construct(RouterInterface $router, string $defaultLocale, array $supportedLocales = ['en', 'fr'])
+    public function __construct(RouterInterface $router, LocaleService $localeService)
     {
         $this->router = $router;
-        $this->defaultLocale = $defaultLocale;
-        $this->supportedLocales = $supportedLocales;
+        $this->localeService = $localeService;
     }
 
     #[AsEventListener(event: KernelEvents::REQUEST)]
@@ -35,7 +34,7 @@ final class LocaleRedirectListener
         // Check if locale is present in the URL
         if (!preg_match('/^\/(en|fr)(\/|$)/', $pathInfo)) {
             // Determine the preferred locale from the browser
-            $preferredLocale = $this->getPreferredLocale($request);
+            $preferredLocale = $this->localeService->getPreferredLocale($request);
             $request->attributes->set('preferredLocale', $preferredLocale);
 
             // Redirect to the URL with the default locale
@@ -43,26 +42,9 @@ final class LocaleRedirectListener
             $response = new RedirectResponse($this->normalizeUrl($url));
             $event->setResponse($response);
         } else {
-            $preferredLocale = $this->getPreferredLocale($request);
+            $preferredLocale = $this->localeService->getPreferredLocale($request);
         }
         $request->attributes->set('preferred-locale', $preferredLocale);
-    }
-
-    private function getPreferredLocale($request): string
-    {
-        // Check if the CB-prefered-locale cookie is set. It takes precedence over the browser language
-        $cookieLocale = $request->cookies->get('CB-prefered-locale');
-        if ($cookieLocale && in_array($cookieLocale, $this->supportedLocales)) {
-            return $cookieLocale;
-        }
-
-        foreach ($request->getLanguages() as $language) {
-            $locale = substr($language, 0, 2);
-            if (in_array($locale, $this->supportedLocales)) {
-                return $locale;
-            }
-        }
-        return $this->defaultLocale;
     }
 
     private function normalizeUrl(string $url): string

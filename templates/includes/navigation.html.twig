@@ -35,3 +35,28 @@
         <option value="profile" {{ selected == 'profile' ? 'selected' : '' }}>{{ 'Profile'|trans }}</option>
     </select>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.querySelector('.CB-user-navigation-mobile select');
+
+    //Really not elegant, but I couldn't find any other way to do it.
+    select.addEventListener('change', function() {
+        const selectedValue = this.value;
+        switch (selectedValue) {
+            case 'dashboard':
+                window.location.href = "{{ path('app_user_dashboard') }}";
+                break;
+            {# case 'transactions':
+                window.location.href = "{{ path('app_user_transactions') }}";
+                break; #}
+            case 'bank':
+                window.location.href = "{{ path('app_user_bank') }}";
+                break;
+            {# case 'profile':
+                window.location.href = "{{ path('app_user_profile') }}";
+                break; #}
+        }
+    });
+});
+</script>

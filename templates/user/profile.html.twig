@@ -1,5 +1,7 @@
 {% extends 'user-navigation_base.html.twig' %}
 
+{% form_theme profileForm 'themes/form_theme.html.twig' %}
+
 {% block title %}CoinBank - Profile{% endblock %}
 
 {% block user_navigation %}
@@ -9,7 +11,39 @@
 {% endblock %}
 
 {% block content %}
-    <div>
-        <h1>{{'Personnal Profile'|trans}}</h1>
+    <div class="CB-form-container">
+        <div class="card-body">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+            <h1>{{'Personnal Profile'|trans}}</h1>
+            {{ form_errors(profileForm) }}
+            {{ form_start(profileForm, {
+                attr : {id:'CB-profile-form'}
+            }) }}
+                <div class="">
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            {{ form_row(profileForm.email, {
+                                label: 'Email'|trans,
+                                attr: { class: 'form-control' },
+                                label_attr: { class: 'form-label' },
+                            }) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ form_row(profileForm.username, {
+                                label: 'Username'|trans,
+                                attr: { class: 'form-control' },
+                                label_attr: { class: 'form-label' },
+                            }) }}
+                        </div>
+                    </div>
+                </div>
+            <button type="submit" class="btn btn-dark">{{'Confirm'|trans}}</button>
+            {{ form_end(profileForm) }}
+        </div>
     </div>
 {% endblock %}

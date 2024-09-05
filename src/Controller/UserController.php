@@ -11,14 +11,28 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
+use App\Form\ProfileFormType;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 #[Route('/{_locale}/user')]
 class UserController extends AbstractController
 {
+    private ?User $user = null;
+
     public function __construct(private readonly TranslatorInterface $translator)
     {
+    }
+
+    private function getAuthenticatedUser(): User
+    {
+        if ($this->user === null) {
+            $this->user = $this->getUser();
+            if (!$this->user instanceof User) {
+                throw new \LogicException('The user is not authenticated.');
+            }
+        }
+        return $this->user;
     }
 
     #[Route('', name: 'app_user_dashboard')]
@@ -32,9 +46,6 @@ class UserController extends AbstractController
     #[Route('/bank', name: 'app_user_bank')]
     public function bank(Request $request, UserBankService $userBankService): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-
         $form = $this->createForm(BankFormType::class);
         $form->handleRequest($request);
 
@@ -42,7 +53,7 @@ class UserController extends AbstractController
             try{
                 $amount = $form->get('amount')->getData();
                 $bankTransactionMode = $form->get('bankTransactionMode')->getData();
-                $userBankService->updateUserBank($user, $amount, $bankTransactionMode);
+                $userBankService->updateUserBank($this->getAuthenticatedUser(), $amount, $bankTransactionMode);
                 $this->addFlash('success', $this->translator->trans('Your bank balance has been updated successfully.'));
             } catch (\InvalidArgumentException $e) {
                 $this->addFlash('error', $e->getMessage());
@@ -59,10 +70,20 @@ class UserController extends AbstractController
     }
 
     #[Route('/profile', name: 'app_user_profile')]
-    public function profile(): Response
+    public function profile(Request $request, EntityManagerInterface $manager): Response
     {
+        $form = $this->createForm(ProfileFormType::class, $this->getAuthenticatedUser());
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager->persist($this->getAuthenticatedUser());
+            $manager->flush();
+            $this->addFlash('success', $this->translator->trans('Your profile has been updated successfully.'));
+            return $this->redirectToRoute('app_user_profile');
+        }
+
         return $this->render('user/profile.html.twig', [
-            'controller_name' => 'UserController',
+            'profileForm' => $form,
         ]);
     }
 }

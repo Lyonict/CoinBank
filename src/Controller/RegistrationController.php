@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Uid\Uuid;
 
 class RegistrationController extends AbstractController
 {
@@ -47,6 +48,7 @@ class RegistrationController extends AbstractController
                     $form->get('plainPassword')->getData()
                 )
             );
+            $user->setSponsorCode(Uuid::v4());
 
             if(!in_array('ROLE_ADMIN', $user->getRoles())){
                 $user->setBank(1000.0);

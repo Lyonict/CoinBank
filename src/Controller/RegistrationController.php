@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Service\LocaleService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +15,12 @@ use Symfony\Component\Routing\Attribute\Route;
 class RegistrationController extends AbstractController
 {
     #[Route('/{_locale}/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $entityManager,
+        LocaleService $localeService
+        ): Response
     {
         $user = new User();
         $passwordMinLength = 8;
@@ -38,6 +44,7 @@ class RegistrationController extends AbstractController
             if(!in_array('ROLE_ADMIN', $user->getRoles())){
                 $user->setBank(1000.0);
             };
+            $user->setPreferedLocale($localeService->getPreferredLocale($request));
 
             $entityManager->persist($user);
             $entityManager->flush();

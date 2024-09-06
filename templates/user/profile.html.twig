@@ -46,6 +46,14 @@
                                 attr: { class: 'form-select' },
                                 label_attr: { class: 'form-label' },
                             }) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ form_row(profileForm.sponsorCode, {
+                                label: 'Sponsor Code'|trans,
+                                attr: { class: 'form-control' },
+                                label_attr: { class: 'form-label' },
+                            }) }}
+                        </div>
                     </div>
                 </div>
             <button type="submit" class="btn btn-dark">{{'Confirm'|trans}}</button>

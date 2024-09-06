@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class RegistrationController extends AbstractController
 {
@@ -22,7 +23,13 @@ class RegistrationController extends AbstractController
         LocaleService $localeService
         ): Response
     {
-        $user = new User();
+        $user = $this->getUser();
+        if($user) {
+            return $this->redirectToRoute('app_user_dashboard');
+        } else {
+            $user = new User;
+        }
+
         $passwordMinLength = 8;
         $passwordMaxLength = 32;
 

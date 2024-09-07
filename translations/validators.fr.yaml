@@ -145,3 +145,4 @@ Error: Erreur
 'Please enter a valid week.': 'Veuillez entrer une semaine valide.'
 'There is already an account with this email': 'Il existe déjà un compte avec cet email'
 'There is already an account with this username': "Il existe déjà un compte avec ce nom d'utilisateur"
+validator.invalid_sponsor_code: 'Le code de parrainage "{{ value }}" n''est pas valide.'

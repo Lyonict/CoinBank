@@ -60,4 +60,42 @@
             {{ form_end(profileForm) }}
         </div>
     </div>
+    {% if app.user.sponsor or app.user.sponsoredUsers|length > 0 %}
+        <div class="CB-form-container-full my-md-3">
+            <div class="card-body">
+                <div class="row">
+                    {% if app.user.sponsor %}
+                        <div class="col-12 col-lg-6">
+                            <h2>{{'Sponsor'|trans}}</h2>
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">#</th>
+                                        <td>{{ app.user.sponsor.username }}</td>
+                                        <td>{{ app.user.sponsor.email }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                    {% if app.user.sponsoredUsers|length > 0 %}
+                        <div class="col-12 col-lg-6">
+                            <h2>{{'Sponsored Users'|trans}}</h2>
+                            <table class="table">
+                                <tbody>
+                                    {% for user in app.user.sponsoredUsers %}
+                                        <tr>
+                                            <th scope="row">{{ loop.index }}</th>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.email }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

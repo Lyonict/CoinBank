@@ -145,3 +145,4 @@ Error: Error
 'Please enter a valid week.': 'Please enter a valid week.'
 'There is already an account with this email': 'There is already an account with this email'
 'There is already an account with this username': 'There is already an account with this username'
+validator.invalid_sponsor_code: 'The sponsor code "{{ value }}" is not valid.'

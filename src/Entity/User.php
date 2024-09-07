@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\Validator\ValidSponsorCode;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -53,8 +56,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Language()]
     private ?string $preferedLocale = null;
 
-    #[ORM\Column(type: Types::GUID)]
+    #[ValidSponsorCode]
+    #[ORM\Column(name: "sponsor_code", type: Types::GUID)]
     private ?string $sponsorCode = null;
+
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'sponsoredUsers')]
+    private ?self $sponsor = null;
+
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'sponsor')]
+    private Collection $sponsoredUsers;
+
+    public function __construct()
+    {
+        $this->sponsoredUsers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -175,6 +193,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setSponsorCode(string $sponsorCode): static
     {
         $this->sponsorCode = $sponsorCode;
+
+        return $this;
+    }
+
+    public function getSponsor(): ?self
+    {
+        return $this->sponsor;
+    }
+
+    public function setSponsor(?self $sponsor): static
+    {
+        $this->sponsor = $sponsor;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getSponsoredUsers(): Collection
+    {
+        return $this->sponsoredUsers;
+    }
+
+    public function addSponsoree(self $user): static
+    {
+        if (!$this->sponsoredUsers->contains($user)) {
+            $this->sponsoredUsers->add($user);
+            $user->setSponsor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSponsoree(self $user): static
+    {
+        if ($this->sponsoredUsers->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getSponsor() === $this) {
+                $user->setSponsor(null);
+            }
+        }
 
         return $this;
     }

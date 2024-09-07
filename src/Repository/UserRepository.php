@@ -33,6 +33,19 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+     /**
+     * Used to find user by sponsor code during registration
+     */
+    public function findBySponsorCode(string $sponsorCode): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.sponsorCode = :sponsorCode')
+            ->setParameter('sponsorCode', $sponsorCode)
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

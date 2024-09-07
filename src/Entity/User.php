@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\Validator\ValidSponsorCode;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -55,7 +56,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Language()]
     private ?string $preferedLocale = null;
 
-    #[ORM\Column(type: Types::GUID)]
+    #[ValidSponsorCode]
+    #[ORM\Column(name: "sponsor_code", type: Types::GUID)]
     private ?string $sponsorCode = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'sponsoredUsers')]

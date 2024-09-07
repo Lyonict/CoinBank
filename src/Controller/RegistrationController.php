@@ -4,24 +4,30 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
 use App\Service\LocaleService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Uid\Uuid;
 
 class RegistrationController extends AbstractController
 {
+    public function __construct(private readonly TranslatorInterface $translator)
+    {
+    }
+
     #[Route('/{_locale}/register', name: 'app_register')]
     public function register(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
+        UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-        LocaleService $localeService
+        LocaleService $localeService,
         ): Response
     {
         $user = $this->getUser();
@@ -54,6 +60,14 @@ class RegistrationController extends AbstractController
                 $user->setBank(1000.0);
             };
             $user->setPreferedLocale($localeService->getPreferredLocale($request));
+
+            $sponsorCode = $form->get('sponsorCode')->getData();
+            if ($sponsorCode) {
+                $sponsor = $userRepository->findBySponsorCode($sponsorCode);
+                if ($sponsor) {
+                    $user->setSponsor($sponsor);
+                }
+            }
 
             $entityManager->persist($user);
             $entityManager->flush();

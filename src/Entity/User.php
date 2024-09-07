@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -47,6 +48,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\PositiveOrZero()]
     #[ORM\Column(nullable: true)]
     private ?float $bank = null;
+
+    #[ORM\Column(length: 5)]
+    #[Assert\Language()]
+    private ?string $preferedLocale = null;
+
+    #[ORM\Column(type: Types::GUID)]
+    private ?string $sponsorCode = null;
 
     public function getId(): ?int
     {
@@ -143,6 +151,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setBank(?float $bank): static
     {
         $this->bank = $bank;
+
+        return $this;
+    }
+
+    public function getPreferedLocale(): ?string
+    {
+        return $this->preferedLocale;
+    }
+
+    public function setPreferedLocale(string $preferedLocale): static
+    {
+        $this->preferedLocale = $preferedLocale;
+
+        return $this;
+    }
+
+    public function getSponsorCode(): ?string
+    {
+        return $this->sponsorCode;
+    }
+
+    public function setSponsorCode(string $sponsorCode): static
+    {
+        $this->sponsorCode = $sponsorCode;
 
         return $this;
     }

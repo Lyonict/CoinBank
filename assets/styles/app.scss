@@ -10,3 +10,31 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+.CB-user-navigation-container {
+  @include media-breakpoint-down(md) {
+    padding: 0;
+  }
+}
+
+.CB-user-navigation-desktop {
+  @extend .py-3;
+  ul {
+    list-style: none;
+    padding: 0;
+    li {
+      @extend .mb-3;
+      a {
+        display: flex;
+        align-items: center;
+        max-width: 200px;
+        @extend .w-100;
+        text-align: left;
+        text-decoration: none;
+        svg {
+          margin-right: 1rem;
+        }
+      }
+    }
+  }
+}

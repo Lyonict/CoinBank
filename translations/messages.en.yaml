@@ -33,3 +33,12 @@ Deposit: Deposit
 Withdraw: Withdraw
 'Bank Transaction': 'Bank Transaction'
 'You cannot deposit more than 100000.': 'You cannot deposit more than 100000.'
+Dashboard: Dashboard
+Transactions: Transactions
+Bank: Bank
+Profile: Profile
+'Your profile has been updated successfully.': 'Your profile has been updated successfully.'
+'Personnal Profile': 'Personnal Profile'
+Language: Language
+'Sponsor Code': 'Sponsor Code'
+Confirm: Confirm

@@ -1,10 +1,16 @@
-{% extends 'base.html.twig' %}
+{% extends 'user-navigation_base.html.twig' %}
 
 {% form_theme bankForm 'themes/form_theme.html.twig' %}
 
-{% block title %}Hello UserController!{% endblock %}
+{% block title %}CoinBank - Bank{% endblock %}
 
-{% block body %}
+{% block user_navigation %}
+    {% with {"selected": "bank"} %}
+        {{ parent() }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
     <div class="CB-form-container">
         <h1>{{'Bank Transaction'|trans}}</h1>
         {% for message in app.flashes('success') %}
@@ -74,3 +80,4 @@
         {{ form_end(bankForm) }}
     </div>
 {% endblock %}
+

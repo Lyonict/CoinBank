@@ -4,19 +4,33 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Service\LocaleService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Uid\Uuid;
 
 class RegistrationController extends AbstractController
 {
     #[Route('/{_locale}/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $entityManager,
+        LocaleService $localeService
+        ): Response
     {
-        $user = new User();
+        $user = $this->getUser();
+        if($user) {
+            return $this->redirectToRoute('app_user_dashboard');
+        } else {
+            $user = new User;
+        }
+
         $passwordMinLength = 8;
         $passwordMaxLength = 32;
 
@@ -34,10 +48,12 @@ class RegistrationController extends AbstractController
                     $form->get('plainPassword')->getData()
                 )
             );
+            $user->setSponsorCode(Uuid::v4());
 
             if(!in_array('ROLE_ADMIN', $user->getRoles())){
                 $user->setBank(1000.0);
             };
+            $user->setPreferedLocale($localeService->getPreferredLocale($request));
 
             $entityManager->persist($user);
             $entityManager->flush();

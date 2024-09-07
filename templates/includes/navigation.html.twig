@@ -1,0 +1,62 @@
+<div class="CB-user-navigation-desktop d-none d-md-block">
+    <ul>
+        <li>
+            <a href="{{ path('app_user_dashboard') }}" class="btn {{ selected == 'dashboard' ? 'btn-dark' : 'btn-outline-dark' }}">
+                {{ ux_icon('mdi:home') }}
+                {{ 'Dashboard'|trans }}
+            </a>
+        </li>
+        <li>
+            <a href="" class="btn {{ selected == 'transactions' ? 'btn-dark' : 'btn-outline-dark' }}">
+                {{ ux_icon('fa6-solid:clock-rotate-left') }}
+                {{ 'Transactions'|trans }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_user_bank') }}" class="btn {{ selected == 'bank' ? 'btn-dark' : 'btn-outline-dark' }}">
+                {{ ux_icon('material-symbols:euro') }}
+                {{ 'Bank'|trans }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('app_user_profile') }}" class="btn {{ selected == 'profile' ? 'btn-dark' : 'btn-outline-dark' }}">
+                {{ ux_icon('iconamoon:profile-fill') }}
+                {{ 'Profile'|trans }}
+            </a>
+        </li>
+    </ul>
+</div>
+{# Select menu, only appears on mobile #}
+<div class="CB-user-navigation-mobile d-block d-md-none">
+    <select class="form-select form-select-lg rounded-0 border-0" aria-label="Default select example">
+        <option value="dashboard" {{ selected == 'dashboard' ? 'selected' : '' }}>{{ 'Dashboard'|trans }}</option>
+        <option value="transactions" {{ selected == 'transactions' ? 'selected' : '' }}>{{ 'Transactions'|trans }}</option>
+        <option value="bank" {{ selected == 'bank' ? 'selected' : '' }}>{{ 'Bank'|trans }}</option>
+        <option value="profile" {{ selected == 'profile' ? 'selected' : '' }}>{{ 'Profile'|trans }}</option>
+    </select>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.querySelector('.CB-user-navigation-mobile select');
+
+    //Really not elegant, but I couldn't find any other way to do it.
+    select.addEventListener('change', function() {
+        const selectedValue = this.value;
+        switch (selectedValue) {
+            case 'dashboard':
+                window.location.href = "{{ path('app_user_dashboard') }}";
+                break;
+            {# case 'transactions':
+                window.location.href = "{{ path('app_user_transactions') }}";
+                break; #}
+            case 'bank':
+                window.location.href = "{{ path('app_user_bank') }}";
+                break;
+            case 'profile':
+                window.location.href = "{{ path('app_user_profile') }}";
+                break;
+        }
+    });
+});
+</script>

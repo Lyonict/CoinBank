@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="CB-user-navigation-container col-12 col-md-4 col-xl-2">
+<div class="container-fluid container-md px-0">
+    <div class="d-flex flex-column flex-md-row">
+        <div class="CB-user-navigation-container-menu">
             {% block user_navigation %}
                 {{ include('includes/navigation.html.twig', {"selected": selected}) }}
             {% endblock %}
         </div>
 
-        <div class="CB-user-navigation-container col-12 col-md-8 col-xl-10">
+        <div class="CB-user-navigation-container-content">
             {% block content %}
             {% endblock %}
         </div>

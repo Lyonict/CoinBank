@@ -17,6 +17,20 @@ body {
   }
 }
 
+.CB-user-navigation-container-menu {
+  @extend .CB-user-navigation-container;
+  @extend .px-md-3;
+  width: 100%;
+  @include media-breakpoint-up(md) {
+    max-width: 220px;
+  }
+}
+
+.CB-user-navigation-container-content {
+  @extend .CB-user-navigation-container;
+  width: 100%;
+}
+
 .CB-user-navigation-desktop {
   @extend .py-3;
   ul {

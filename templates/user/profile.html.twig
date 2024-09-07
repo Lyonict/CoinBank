@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="CB-form-container">
+    <div class="CB-form-container-full my-md-3">
         <div class="card-body">
             {% for message in app.flashes('success') %}
                 <div class="alert alert-success">{{ message }}</div>
@@ -26,28 +26,28 @@
             }) }}
                 <div class="">
                     <div class="row">
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6">
                             {{ form_row(profileForm.email, {
                                 label: 'Email'|trans,
                                 attr: { class: 'form-control' },
                                 label_attr: { class: 'form-label' },
                             }) }}
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6">
                             {{ form_row(profileForm.username, {
                                 label: 'Username'|trans,
                                 attr: { class: 'form-control' },
                                 label_attr: { class: 'form-label' },
                             }) }}
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6">
                             {{ form_row(profileForm.preferedLocale, {
                                 label: 'Language'|trans,
                                 attr: { class: 'form-select' },
                                 label_attr: { class: 'form-label' },
                             }) }}
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div class="col-12 col-lg-6">
                             {{ form_row(profileForm.sponsorCode, {
                                 label: 'Sponsor Code'|trans,
                                 attr: { class: 'form-control' },
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                 </div>
-            <button type="submit" class="btn btn-dark">{{'Confirm'|trans}}</button>
+            <button type="submit" class="btn btn-primary">{{'Confirm'|trans}}</button>
             {{ form_end(profileForm) }}
         </div>
     </div>

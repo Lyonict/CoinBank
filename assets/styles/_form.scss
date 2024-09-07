@@ -22,3 +22,10 @@
         transform: rotate(90deg);
     }
 }
+
+.CB-form-container-full {
+    border: 2px solid $light;
+    @extend .rounded;
+    @extend .p-5;
+    @extend .bg-light;
+}

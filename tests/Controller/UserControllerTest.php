@@ -243,4 +243,51 @@ class UserControllerTest extends WebTestCase
 
         return $container;
     }
+
+    public function testProfileAction(): void
+    {
+        // Create a test user
+        $testUser = new User();
+        $testUser->setEmail('old@example.com');
+        $testUser->setUsername('old_username');
+        $testUser->setPassword('$2y$13$hK7Xq0qXNSPyZZzUgfLW3.QOi0lJRQQVtbFk.4wO1eNgxKLGvv7Oi'); // hashed password
+        $testUser->setPreferedLocale('en');
+        $testUser->setSponsorCode(Uuid::v4());
+        $testUser->setBank(1000); // Initial balance
+
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $entityManager->persist($testUser);
+        $entityManager->flush();
+
+        // Log in the user
+        $this->client->loginUser($testUser);
+
+        // Make a request to the profile page
+        $crawler = $this->client->request('GET', '/en/user/profile');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h1', 'Personnal Profile');
+
+        // Test form submission
+        $form = $crawler->selectButton('Confirm')->form();
+        $form['profile_form[email]'] = 'new@example.com';
+        $form['profile_form[username]'] = 'new_username';
+        $form['profile_form[preferedLocale]'] = 'fr';
+
+        $this->client->submit($form);
+
+        // Follow redirects
+        do {
+            $this->client->followRedirect();
+        } while ($this->client->getResponse()->isRedirect());
+
+        // Assert that we've ended up on the French profile page
+        $this->assertRouteSame('app_user_profile', ['_locale' => 'fr']);
+
+        // Verify that the user's profile has been updated
+        // We check that the email has been updated by finding the user by it's new email
+        $updatedUser = $this->userRepository->findOneByEmail('new@example.com');
+        $this->assertEquals('new_username', $updatedUser->getUsername());
+        $this->assertEquals('fr', $updatedUser->getPreferedLocale());
+    }
 }

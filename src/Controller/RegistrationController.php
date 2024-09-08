@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Service\RegistrationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +23,7 @@ class RegistrationController extends AbstractController
     #[Route('/{_locale}/register', name: 'app_register')]
     public function register(
         Request $request,
+        Security $security
         ): Response
     {
         $user = $this->getUser();
@@ -43,7 +45,8 @@ class RegistrationController extends AbstractController
             $formData['plainPassword'] = $form->get('plainPassword')->getData();
             $formData['sponsorCode']= $form->get('sponsorCode')->getData();
             $this->registrationService->registerUser($user, $formData, $request);
-            return $this->redirectToRoute('app_main');
+            $security->login($user);
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('registration/register.html.twig', [

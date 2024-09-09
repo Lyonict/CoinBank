@@ -1,0 +1,17 @@
+{% extends 'user-navigation_base.html.twig' %}
+
+{% block title %}CoinBank - Dashboard{% endblock %}
+
+{% block user_navigation %}
+    {% with {"selected": "dashboard"} %}
+        {{ parent() }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+    <div class="CB-form-container-full my-md-3">
+        <div class="card-body">
+            <h1>{{ 'Dashboard'|trans }}</h1>
+        </div>
+    </div>
+{% endblock %}

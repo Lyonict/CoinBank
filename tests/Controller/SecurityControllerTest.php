@@ -121,7 +121,7 @@ class SecurityControllerTest extends TestCase
         $this->twig->expects($this->once())
             ->method('render')
             ->with('security/login.html.twig', $this->callback(function ($params) {
-                return $params['last_username'] === 'failed_user' 
+                return $params['last_username'] === 'failed_user'
                     && $params['error'] instanceof AuthenticationException
                     && $params['error']->getMessage() === 'Invalid credentials';
             }))

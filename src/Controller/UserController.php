@@ -85,4 +85,11 @@ class UserController extends AbstractController
             'profileForm' => $form,
         ]);
     }
+
+    #[Route('/crypto-form', name: 'app_user_crypto_form')]
+    public function cryptoForm(): Response
+    {
+        return $this->render('user/crypto-form.html.twig', [
+        ]);
+    }
 }

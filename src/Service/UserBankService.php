@@ -57,7 +57,7 @@ class UserBankService
             throw new \InvalidArgumentException($this->translator->trans('Amount must be a positive number.'));
         }
 
-        if (!$user->getBank() >= $amount) {
+        if ($user->getBank() < $amount) {
             throw new \InvalidArgumentException($this->translator->trans('Insufficient funds for this purchase.'));
         }
 

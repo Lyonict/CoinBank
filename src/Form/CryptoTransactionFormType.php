@@ -21,6 +21,7 @@ class CryptoTransactionFormType extends AbstractType
             ->add('cryptocurrency', EntityType::class, [
                 'class' => Cryptocurrency::class,
                 'choice_label' => 'name',
+                'choice_value' => 'coingecko_id',
             ])
             ->add('transactionType', EnumType::class, [
                 'class' => TransactionType::class,
@@ -49,6 +50,7 @@ class CryptoTransactionFormType extends AbstractType
             ->add('dollarAmount', NumberType::class, [
                 'error_bubbling' => true,
                 'mapped'=> false,
+                'disabled'=>true,
             ])
         ;
     }

@@ -13,6 +13,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
 use App\Form\CryptoTransactionFormType;
 use App\Form\ProfileFormType;
+use App\Service\CoinGeckoService;
 use App\Service\CryptoTransactionService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -92,10 +93,13 @@ class UserController extends AbstractController
     public function cryptoForm(
         Request $request,
         CryptoTransactionService $cryptoTransactionService,
+        CoinGeckoService $coinGeckoService,
         ): Response
     {
         $form = $this->createForm(CryptoTransactionFormType::class);
         $form->handleRequest($request);
+
+        $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();
 
         if ($form->isSubmitted() && $form->isValid()) {
             $transaction = $form->getData();
@@ -114,6 +118,7 @@ class UserController extends AbstractController
 
         return $this->render('user/crypto-form.html.twig', [
             'cryptoForm'=> $form,
+            'cryptoPrices'=> $cryptoPrices,
         ]);
     }
 }

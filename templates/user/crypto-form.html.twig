@@ -70,3 +70,39 @@
         </div>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    <script>
+        const cryptoPrices = {{ cryptoPrices|json_encode|raw }};
+    </script>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectCryptoField = document.getElementById('crypto_transaction_form_cryptocurrency');
+            const cryptoAmountField = document.getElementById('crypto_transaction_form_cryptoAmount');
+            const dollarAmountField = document.getElementById('crypto_transaction_form_dollarAmount');
+
+            function updateDollarAmount() {
+                const selectedCrypto = selectCryptoField.value;
+                const cryptoAmount = parseFloat(cryptoAmountField.value);
+                if (!isNaN(cryptoAmount) && isFinite(cryptoAmount)) {
+                    dollarAmountField.value = (cryptoAmount * cryptoPrices[selectedCrypto]).toFixed(2);
+                }
+            }
+
+            function resetAmounts() {
+                cryptoAmountField.value = '';
+                dollarAmountField.value = '';
+            }
+
+            if (cryptoAmountField && dollarAmountField) {
+                cryptoAmountField.addEventListener('input', updateDollarAmount);
+            }
+
+            if (selectCryptoField) {
+                selectCryptoField.addEventListener('change', resetAmounts);
+            }
+        });
+    </script>
+{% endblock %}

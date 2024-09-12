@@ -2,18 +2,27 @@
 
 namespace App\Service;
 
+use App\Entity\Cryptocurrency;
 use App\Entity\User;
+use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 class UserBankService
 {
     private $entityManager;
     private $translator;
+    private $transactionRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, TranslatorInterface $translator)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        TranslatorInterface $translator,
+        TransactionRepository $transactionRepository,
+        private readonly LoggerInterface $logger)
     {
         $this->entityManager = $entityManager;
         $this->translator = $translator;
+        $this->transactionRepository = $transactionRepository;
     }
 
     public function updateUserBank(User $user, float $amount, string $bankTransactionMode): void
@@ -38,6 +47,38 @@ class UserBankService
         ? $user->getBank() + $amount
         : $user->getBank() - $amount;
 
+        $user->setBank($newBalance);
+        $this->entityManager->flush();
+    }
+
+    public function processCryptoBuy(User $user, float $amount): void
+    {
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException($this->translator->trans('Amount must be a positive number.'));
+        }
+
+        if (!$user->getBank() >= $amount) {
+            throw new \InvalidArgumentException($this->translator->trans('Insufficient funds for this purchase.'));
+        }
+
+        $newBalance = $user->getBank() - $amount;
+        $user->setBank($newBalance);
+        $this->entityManager->flush();
+    }
+
+    public function processCryptoSell(User $user, Cryptocurrency $cryptocurrency, float $cryptoAmount, float $moneyAmount): void
+    {
+        if ($cryptoAmount <= 0) {
+            throw new \InvalidArgumentException($this->translator->trans('Amount must be a positive number.'));
+        }
+
+        $netAmount = $this->transactionRepository->getNetAmountByName($cryptocurrency->getName());
+
+        if ($netAmount === null || $cryptoAmount > $moneyAmount) {
+            throw new \InvalidArgumentException($this->translator->trans('Insufficient cryptocurrency balance for this sale.'));
+        }
+
+        $newBalance = $user->getBank() + $moneyAmount;
         $user->setBank($newBalance);
         $this->entityManager->flush();
     }

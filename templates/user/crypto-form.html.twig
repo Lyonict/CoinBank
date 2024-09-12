@@ -15,6 +15,13 @@
         <div class="card-body">
             <div class="CB-form-small mx-auto">
             <h1>{{'Trade'|trans}}</h1>
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+            {{ form_errors(cryptoForm) }}
             {{ form_start(cryptoForm) }}
             {{ form_row(cryptoForm.cryptocurrency, {
                 label: 'Cryptocurrency'|trans,

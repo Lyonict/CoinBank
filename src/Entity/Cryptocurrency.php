@@ -16,7 +16,7 @@ class Cryptocurrency
     private ?int $id = null;
 
     #[ORM\Column(length: 5)]
-    private ?string $code = null;
+    private ?string $symbol = null;
 
     #[ORM\Column(length: 20)]
     private ?string $name = null;
@@ -26,6 +26,9 @@ class Cryptocurrency
      */
     #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'Cryptocurrency')]
     private Collection $transactions;
+
+    #[ORM\Column(length: 40)]
+    private ?string $coingecko_id = null;
 
     public function __construct()
     {
@@ -37,14 +40,14 @@ class Cryptocurrency
         return $this->id;
     }
 
-    public function getCode(): ?string
+    public function getSymbol(): ?string
     {
-        return $this->code;
+        return $this->symbol;
     }
 
-    public function setCode(string $code): static
+    public function setSymbol(string $symbol): static
     {
-        $this->code = $code;
+        $this->symbol = $symbol;
 
         return $this;
     }
@@ -87,6 +90,18 @@ class Cryptocurrency
                 $transaction->setCryptocurrency(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCoingeckoId(): ?string
+    {
+        return $this->coingecko_id;
+    }
+
+    public function setCoingeckoId(string $coingecko_id): static
+    {
+        $this->coingecko_id = $coingecko_id;
 
         return $this;
     }

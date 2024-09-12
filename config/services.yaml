@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.supported_locales: ['en', 'fr']
+    coingecko_api_key: '%env(default::COINGECKO_API_KEY)%'
 
 services:
     # default configuration for services in *this* file
@@ -33,3 +34,6 @@ services:
         arguments:
             $defaultLocale: '%kernel.default_locale%'
             $supportedLocales: ['en', 'fr']
+    App\Service\CoinGeckoService:
+        arguments:
+            $apiKey: '%env(resolve:COINGECKO_API_KEY)%'

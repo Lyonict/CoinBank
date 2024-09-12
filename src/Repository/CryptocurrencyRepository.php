@@ -16,6 +16,43 @@ class CryptocurrencyRepository extends ServiceEntityRepository
         parent::__construct($registry, Cryptocurrency::class);
     }
 
+    /**
+     * @return string[] Returns an array of all cryptocurrency coingecko_id
+     */
+    public function findCoinGeckoIds(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.coingecko_id')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param string $coingeckoId The coingecko_id of the cryptocurrency
+     * @return Cryptocurrency|null Returns a Cryptocurrency object or null if not found
+     */
+    public function findOneByCoingeckoId(string $coingeckoId): ?Cryptocurrency
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.coingecko_id = :coingeckoId')
+            ->setParameter('coingeckoId', $coingeckoId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @param string $name The name of the cryptocurrency
+     * @return Cryptocurrency|null Returns a Cryptocurrency object or null if not found
+     */
+    public function findOneByName(string $name): ?Cryptocurrency
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.name = :name')
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Cryptocurrency[] Returns an array of Cryptocurrency objects
     //     */

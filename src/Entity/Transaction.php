@@ -35,6 +35,9 @@ class Transaction
     #[ORM\Column(type: Types::STRING, length: 4, enumType: TransactionType::class)]
     private ?TransactionType $transactionType = null;
 
+    #[ORM\Column]
+    private ?float $dollarAmount = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -64,12 +67,12 @@ class Transaction
         return $this;
     }
 
-    public function getAmountExchanged(): ?float
+    public function getCryptoAmount(): ?float
     {
         return $this->cryptoAmount;
     }
 
-    public function setAmountExchanged(float $cryptoAmount): static
+    public function setCryptoAmount(float $cryptoAmount): static
     {
         $this->cryptoAmount = $cryptoAmount;
 
@@ -96,6 +99,18 @@ class Transaction
     public function setTransactionType(TransactionType $transactionType): static
     {
         $this->transactionType = $transactionType;
+
+        return $this;
+    }
+
+    public function getDollarAmount(): ?float
+    {
+        return $this->dollarAmount;
+    }
+
+    public function setDollarAmount(float $dollarAmount): static
+    {
+        $this->dollarAmount = $dollarAmount;
 
         return $this;
     }

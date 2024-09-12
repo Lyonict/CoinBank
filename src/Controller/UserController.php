@@ -13,6 +13,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
 use App\Form\CryptoTransactionFormType;
 use App\Form\ProfileFormType;
+use App\Service\CryptoTransactionService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -88,10 +89,28 @@ class UserController extends AbstractController
     }
 
     #[Route('/crypto-form', name: 'app_user_crypto_form')]
-    public function cryptoForm(Request $request, CryptoTransactionFormType $cryptoTransactionFormType): Response
+    public function cryptoForm(
+        Request $request,
+        CryptoTransactionService $cryptoTransactionService,
+        ): Response
     {
         $form = $this->createForm(CryptoTransactionFormType::class);
         $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $transaction = $form->getData();
+
+            try {
+                $cryptoTransactionService->createTransaction($transaction, $this->getAuthenticatedUser());
+                return $this->redirectToRoute('app_user_dashboard');
+            } catch (\InvalidArgumentException $e) {
+                $this->addFlash('error', $e->getMessage());
+            } catch (\Exception $e) {
+                $this->addFlash('error', $this->translator->trans('An error occurred while creating the transaction.'));
+            }
+            return $this->redirectToRoute('app_user_crypto_form');
+        }
+
 
         return $this->render('user/crypto-form.html.twig', [
             'cryptoForm'=> $form,

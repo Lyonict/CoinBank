@@ -36,7 +36,7 @@ class CryptoTransactionFormType extends AbstractType
                 'error_bubbling' => true,
                 'constraints' => [
                     new Assert\NotBlank(),
-                    new Assert\Choice(['buy', 'sell']),
+                    new Assert\Choice([TransactionType::BUY, TransactionType::SELL]),
                 ],
             ])
             ->add('cryptoAmount', NumberType::class, [
@@ -50,13 +50,6 @@ class CryptoTransactionFormType extends AbstractType
                 'error_bubbling' => true,
                 'mapped'=> false,
             ])
-            // ->add('date', null, [
-            //     'widget' => 'single_text',
-            // ])
-            // ->add('user', EntityType::class, [
-            //     'class' => User::class,
-            //     'choice_label' => 'id',
-            // ])
         ;
     }
 

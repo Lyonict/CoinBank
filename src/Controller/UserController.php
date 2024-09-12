@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
+use App\Form\CryptoTransactionFormType;
 use App\Form\ProfileFormType;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -87,9 +88,13 @@ class UserController extends AbstractController
     }
 
     #[Route('/crypto-form', name: 'app_user_crypto_form')]
-    public function cryptoForm(): Response
+    public function cryptoForm(Request $request, CryptoTransactionFormType $cryptoTransactionFormType): Response
     {
+        $form = $this->createForm(CryptoTransactionFormType::class);
+        $form->handleRequest($request);
+
         return $this->render('user/crypto-form.html.twig', [
+            'cryptoForm'=> $form,
         ]);
     }
 }

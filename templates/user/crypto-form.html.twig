@@ -1,5 +1,7 @@
 {% extends 'user-navigation_base.html.twig' %}
 
+{% form_theme cryptoForm 'themes/form_theme.html.twig' %}
+
 {% block title %}CoinBank - Crypto Form{% endblock %}
 
 {% block user_navigation %}
@@ -11,7 +13,53 @@
 {% block content %}
     <div class="CB-form-container-full my-md-3">
         <div class="card-body">
-            <h1>This is the crypto form</h1>
+            <div class="CB-form-small mx-auto">
+            <h1>{{'Trade'|trans}}</h1>
+            {{ form_start(cryptoForm) }}
+            {{ form_row(cryptoForm.cryptocurrency, {
+                label: 'Cryptocurrency'|trans,
+                attr: { class: 'form-select' },
+                label_attr: { class: 'form-label' },
+            }) }}
+            <div class="row mb-3">
+                {% for child in cryptoForm.transactionType %}
+                    <div class="col-6">
+                        {{ form_widget(child, {
+                        attr: { class: 'btn-check' }
+                        }) }}
+                        {% if child.vars.value == 'buy' %}
+                            {% set labelContent = '<div class="CB-deposit-icon-wrapper d-flex align-items-center me-2">' ~ ux_icon('fa6-solid:arrow-right-to-bracket') ~ '</div>' %}
+                            {% set labelName = 'Buy'|trans %}
+                        {% else %}
+                            {% set labelContent = '<div class="d-flex align-items-center me-2">' ~ ux_icon('fa6-solid:arrow-up-from-bracket') ~ '</div>' %}
+                            {% set labelName = 'Sell'|trans %}
+                        {% endif %}
+                        {{ form_label(child, labelContent ~ ' ' ~ labelName, {
+                            label_html: true,
+                            label_attr: { class: 'd-flex justify-content-center btn btn-outline-dark' },
+                        }) }}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    {{ form_row(cryptoForm.cryptoAmount, {
+                        label: 'Amount(Coin)'|trans,
+                        attr: { class: 'form-control' },
+                        label_attr: { class: 'form-label' },
+                    }) }}
+                </div>
+                <div class="col-12 col-lg-6">
+                    {{ form_row(cryptoForm.dollarAmount, {
+                        label: 'Amount($)'|trans,
+                        attr: { class: 'form-control' },
+                        label_attr: { class: 'form-label' },
+                    }) }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-dark w-100">{{'Proceed'|trans}}</button>
+            {{ form_end(cryptoForm) }}
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -1,6 +1,12 @@
-.CB-form-container {
+.CB-form-small {
     @include media-breakpoint-up(md) {
         max-width: 500px;
+    }
+}
+
+.CB-form-container {
+    @extend .CB-form-small;
+    @include media-breakpoint-up(md) {
         border-radius: 8px;
     }
     @extend .mx-auto;
@@ -17,10 +23,8 @@
     }
 }
 
-#CB-bank-form {
-    .CB-deposit-icon-wrapper svg {
-        transform: rotate(90deg);
-    }
+.CB-deposit-icon-wrapper svg {
+    transform: rotate(90deg);
 }
 
 .CB-form-container-full {

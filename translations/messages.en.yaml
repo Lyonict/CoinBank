@@ -45,3 +45,13 @@ Confirm: Confirm
 'Sponsor code (optional)': 'Sponsor code (optional)'
 Sponsor: Sponsor
 'Sponsored Users': 'Sponsored Users'
+'An error occurred while creating the transaction.': 'An error occurred while creating the transaction.'
+'Insufficient funds for this purchase.': 'Insufficient funds for this purchase.'
+'Insufficient cryptocurrency balance for this sale.': 'Insufficient cryptocurrency balance for this sale.'
+Trade: Trade
+Cryptocurrency: Cryptocurrency
+Buy: Buy
+Sell: Sell
+Amount(Coin): Amount(Coin)
+Amount($): Amount($)
+Buy/Sell: Buy/Sell

@@ -13,8 +13,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
 use App\Form\CryptoTransactionFormType;
 use App\Form\ProfileFormType;
+use App\Repository\TransactionRepository;
 use App\Service\CoinGeckoService;
 use App\Service\CryptoTransactionService;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -23,7 +25,7 @@ class UserController extends AbstractController
 {
     private ?User $user = null;
 
-    public function __construct(private readonly TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator, private readonly LoggerInterface $logger)
     {
     }
 
@@ -39,9 +41,37 @@ class UserController extends AbstractController
     }
 
     #[Route('', name: 'app_user_dashboard')]
-    public function index(): Response
+    public function index(TransactionRepository $transactionRepository, CoinGeckoService $coinGeckoService,): Response
     {
+        $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();
+        $this->logger->info('cryptoPrices', ['cryptoPrices' => $cryptoPrices]);
+
+        $cryptoBalances = $transactionRepository->getCryptoBalancesForUser($this->getAuthenticatedUser());
+
+        $updatedCryptoBalances = [];
+        foreach ($cryptoBalances as $balance) {
+            if (isset($cryptoPrices[$balance['coingecko_id']])) {
+                $balance['currentPrice'] = $cryptoPrices[$balance['coingecko_id']];
+                $currentValue = $balance['cryptoBalance'] * $balance['currentPrice'];
+                $balance['profitPercentage'] = round(($currentValue - $balance['dollarBalance']) / $balance['dollarBalance'] * 100, 2);
+                if ($currentValue >= 1000000) {
+                    $balance['currentValue'] = number_format($currentValue / 1000000, 2) . 'M';
+                } elseif ($currentValue >= 1000) {
+                    $balance['currentValue'] = number_format($currentValue / 1000, 2) . 'k';
+                } else {
+                    $balance['currentValue'] = number_format($currentValue, 2);
+                }
+                $updatedCryptoBalances[] = $balance;
+            }
+        }
+        $cryptoBalances = $updatedCryptoBalances;
+
+        $this->logger->info('cryptoBalances', ['cryptoBalances' => $cryptoBalances]);
+
+
+
         return $this->render('user/dashboard.html.twig', [
+            'cryptoBalances'=> $cryptoBalances,
         ]);
     }
 

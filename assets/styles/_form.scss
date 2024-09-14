@@ -30,6 +30,7 @@
 .CB-form-container-full {
     border: 2px solid $light;
     @extend .rounded;
-    @extend .p-5;
+    @extend .p-2;
+    @extend .p-lg-5;
     @extend .bg-light;
 }

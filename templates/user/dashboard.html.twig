@@ -1,0 +1,56 @@
+{% extends 'user-navigation_base.html.twig' %}
+
+{% block title %}CoinBank - Dashboard{% endblock %}
+
+{% block user_navigation %}
+    {% with {"selected": "dashboard"} %}
+        {{ parent() }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+    <div class="CB-form-container-full my-md-3">
+        <div class="card-body">
+            <h1>{{ 'Dashboard'|trans }}</h1>
+            <div class="embed-responsive embed-responsive-16by9">
+            <!-- TradingView Widget BEGIN -->
+            <div class="tradingview-widget-container">
+                <div id="tradingview_12345" data-user-prefered-locale="{{app.user.preferedLocale}}"></div>
+            </div>
+            <!-- TradingView Widget END -->
+            </div>
+
+            <a href="{{path("app_user_crypto_form")}}" class="btn btn-dark w-100 my-3 d-flex justify-content-center align-items-center">{{ ux_icon('fa6-solid:wallet', {class: "me-2"}) }} {{'Buy/Sell'|trans}}</a>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        function initTradingViewWidget(userPreferedLocale) {
+            new TradingView.widget({
+            "autosize": true,
+            "symbol": "BINANCE:BTCUSDT",
+            "interval": "D",
+            "timezone": "Europe/Paris",
+            "theme": "light",
+            "style": "3",
+            "locale": userPreferedLocale,
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "allow_symbol_change": true,
+            "container_id": "tradingview_12345"
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const tradingView = document.getElementById('tradingview_12345')
+            if (tradingView) {
+                const userPreferedLocale = tradingView.getAttribute("data-user-prefered-locale");
+                initTradingViewWidget(userPreferedLocale);
+            }
+        });
+    </script>
+{% endblock %}

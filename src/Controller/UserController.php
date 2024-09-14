@@ -11,7 +11,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
+use App\Form\CryptoTransactionFormType;
 use App\Form\ProfileFormType;
+use App\Service\CoinGeckoService;
+use App\Service\CryptoTransactionService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -38,8 +41,7 @@ class UserController extends AbstractController
     #[Route('', name: 'app_user_dashboard')]
     public function index(): Response
     {
-        return $this->render('user/index.html.twig', [
-            'controller_name' => 'UserController',
+        return $this->render('user/dashboard.html.twig', [
         ]);
     }
 
@@ -84,6 +86,39 @@ class UserController extends AbstractController
 
         return $this->render('user/profile.html.twig', [
             'profileForm' => $form,
+        ]);
+    }
+
+    #[Route('/crypto-form', name: 'app_user_crypto_form')]
+    public function cryptoForm(
+        Request $request,
+        CryptoTransactionService $cryptoTransactionService,
+        CoinGeckoService $coinGeckoService,
+        ): Response
+    {
+        $form = $this->createForm(CryptoTransactionFormType::class);
+        $form->handleRequest($request);
+
+        $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $transaction = $form->getData();
+
+            try {
+                $cryptoTransactionService->createTransaction($transaction, $this->getAuthenticatedUser());
+                return $this->redirectToRoute('app_user_dashboard');
+            } catch (\InvalidArgumentException $e) {
+                $this->addFlash('error', $e->getMessage());
+            } catch (\Exception $e) {
+                $this->addFlash('error', $this->translator->trans('An error occurred while creating the transaction.'));
+            }
+            return $this->redirectToRoute('app_user_crypto_form');
+        }
+
+
+        return $this->render('user/crypto-form.html.twig', [
+            'cryptoForm'=> $form,
+            'cryptoPrices'=> $cryptoPrices,
         ]);
     }
 }

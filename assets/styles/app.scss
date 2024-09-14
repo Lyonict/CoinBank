@@ -52,3 +52,10 @@ body {
     }
   }
 }
+
+#tradingview_12345 {
+  height: 400px;
+  @include media-breakpoint-up(lg) {
+    height: 600px;
+  }
+}

@@ -74,9 +74,6 @@
 {% block javascripts %}
     <script>
         const cryptoPrices = {{ cryptoPrices|json_encode|raw }};
-    </script>
-
-    <script>
 
         document.addEventListener('DOMContentLoaded', function() {
             const selectCryptoField = document.getElementById('crypto_transaction_form_cryptocurrency');

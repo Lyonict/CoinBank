@@ -3,18 +3,15 @@
 namespace App\Service;
 
 use App\Repository\CryptocurrencyRepository;
-use Psr\Log\LoggerInterface;
 
 class CoinGeckoService
 {
     private $client;
-    private $logger;
     private $apiKey;
     private $cryptoRepository;
 
-    public function __construct(LoggerInterface $logger, string $apiKey, CryptocurrencyRepository $cryptoRepository) {
+    public function __construct(string $apiKey, CryptocurrencyRepository $cryptoRepository) {
         $this->client = new \GuzzleHttp\Client();
-        $this->logger = $logger;
         $this->apiKey = $apiKey;
         $this->cryptoRepository = $cryptoRepository;
     }
@@ -34,14 +31,12 @@ class CoinGeckoService
 
             return true;
         } catch (\Exception $e) {
-            $this->logger->error('CoinGecko API ping failed: ' . $e->getMessage());
             return false;
         }
     }
 
     public function getAllCryptoCurrentPrice() {
         if (!$this->getPing()) {
-            $this->logger->error('CoinGecko API is not available');
             return false;
         }
 
@@ -64,7 +59,6 @@ class CoinGeckoService
 
             return $filteredCryptos;
         } catch (\Exception $e) {
-            $this->logger->error('CoinGecko API request failed: ' . $e->getMessage());
             return false;
         }
     }

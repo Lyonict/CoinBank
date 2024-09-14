@@ -6,7 +6,6 @@ use App\Entity\Cryptocurrency;
 use App\Entity\User;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 class UserBankService
 {
@@ -17,8 +16,7 @@ class UserBankService
     public function __construct(
         EntityManagerInterface $entityManager,
         TranslatorInterface $translator,
-        TransactionRepository $transactionRepository,
-        private readonly LoggerInterface $logger)
+        TransactionRepository $transactionRepository)
     {
         $this->entityManager = $entityManager;
         $this->translator = $translator;

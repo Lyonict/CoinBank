@@ -6,6 +6,7 @@ use App\Entity\Transaction;
 use App\Entity\User;
 use App\Enum\TransactionType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -76,6 +77,22 @@ class TransactionRepository extends ServiceEntityRepository
             ->getResult();
 
         return array_filter($result, fn($crypto) => $crypto['cryptoBalance'] > 0);
+    }
+
+    /**
+     * Creates a QueryBuilder for retrieving all transactions for a given user.
+     *
+     * We need to return a QueryBuilder because we need to use the Pagerfanta library to paginate the results.
+     *
+     * @param User $user The user for whom to retrieve the transactions
+     * @return QueryBuilder A QueryBuilder object for fetching the user's transactions
+     */
+    public function getAllTransactionsForUser(User $user): QueryBuilder
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('t.date', 'DESC');
     }
 
     //    /**

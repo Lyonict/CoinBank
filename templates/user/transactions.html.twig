@@ -1,0 +1,19 @@
+{% extends 'user-navigation_base.html.twig' %}
+
+{% block title %}CoinBank - Transactions{% endblock %}
+
+{% block user_navigation %}
+    {% with {"selected": "transactions"} %}
+        {{ parent() }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+    <div class="CB-form-container-full my-md-3">
+        <div class="card-body">
+            <h1>{{ 'Transactions'|trans }}</h1>
+            {% include 'includes/block/CB_crypto-info_transactions.html.twig' with {transactions: transactions} %}
+            {{ pagerfanta(transactions, 'twitter_bootstrap5') }}
+        </div>
+    </div>
+{% endblock %}

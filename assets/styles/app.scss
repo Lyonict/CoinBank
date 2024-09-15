@@ -78,24 +78,26 @@ body {
       margin-bottom: 0; // Remove bottom margin from the last row
     }
 
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.17);
+    &:not(.simple-card) {
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.17);
 
-      &:active {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+        &:active {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+        }
       }
     }
-
-    .crypto-icon {
-      max-height: 40px;
-    }
-
-    .coin-code {
-      margin-bottom: -6px;
-    }
   }
+}
+
+.crypto-icon {
+  max-height: 40px;
+}
+
+.coin-code {
+  margin-bottom: -6px;
 }
 
 .CB-crypto-info-container-header,

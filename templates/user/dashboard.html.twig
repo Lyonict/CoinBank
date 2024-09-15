@@ -30,10 +30,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div class="CB-crypto-info-empty-wallet d-flex justify-content-center align-items-center">
-                    <img class="crypto-icon" src="{{ asset('images/box.png') }}" alt="Empty wallet image">
-                    <p>{{'No crypto in wallet'|trans}}</p>
-                </div>
+                {% include 'includes/block/CB_crypto-info_empty-indicator.html.twig' with {message: 'No crypto in wallet'|trans} %}
             {% endif %}
         </div>
 

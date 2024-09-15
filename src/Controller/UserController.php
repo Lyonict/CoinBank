@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Form\BankFormType;
 use App\Service\UserBankService;
 use Doctrine\ORM\EntityManagerInterface;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,7 @@ use App\Form\ProfileFormType;
 use App\Repository\TransactionRepository;
 use App\Service\CoinGeckoService;
 use App\Service\CryptoTransactionService;
-use Psr\Log\LoggerInterface;
+use Pagerfanta\Pagerfanta;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -25,7 +26,7 @@ class UserController extends AbstractController
 {
     private ?User $user = null;
 
-    public function __construct(private readonly TranslatorInterface $translator, private readonly LoggerInterface $logger)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
     }
 
@@ -44,7 +45,6 @@ class UserController extends AbstractController
     public function index(TransactionRepository $transactionRepository, CoinGeckoService $coinGeckoService,): Response
     {
         $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();
-        $this->logger->info('cryptoPrices', ['cryptoPrices' => $cryptoPrices]);
 
         $cryptoBalances = $transactionRepository->getCryptoBalancesForUser($this->getAuthenticatedUser());
 
@@ -66,12 +66,22 @@ class UserController extends AbstractController
         }
         $cryptoBalances = $updatedCryptoBalances;
 
-        $this->logger->info('cryptoBalances', ['cryptoBalances' => $cryptoBalances]);
-
-
-
         return $this->render('user/dashboard.html.twig', [
             'cryptoBalances'=> $cryptoBalances,
+        ]);
+    }
+
+    #[Route('/transactions', name: 'app_user_transactions')]
+    public function transactions(Request $request, TransactionRepository $transactionRepository): Response
+    {
+        $transactions = Pagerfanta::createForCurrentPageWithMaxPerPage(
+            new QueryAdapter($transactionRepository->getAllTransactionsForUser($this->getAuthenticatedUser())),
+            $request->query->get('page', 1),
+            10
+        );
+
+        return $this->render('user/transactions.html.twig', [
+            'transactions' => $transactions,
         ]);
     }
 

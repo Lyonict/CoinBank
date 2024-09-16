@@ -17,6 +17,7 @@ use App\Form\ProfileFormType;
 use App\Repository\CryptocurrencyRepository;
 use App\Repository\TransactionRepository;
 use App\Service\CoinGeckoService;
+use App\Service\CryptoFormService;
 use App\Service\CryptoTransactionService;
 use Pagerfanta\Pagerfanta;
 use Psr\Log\LoggerInterface;
@@ -158,41 +159,27 @@ class UserController extends AbstractController
     #[Route('/crypto-form', name: 'app_user_crypto_form', methods: ['GET', 'POST'])]
     public function cryptoForm(
         Request $request,
-        CryptocurrencyRepository $cryptocurrencyRepository,
-        CryptoTransactionService $cryptoTransactionService,
-        CoinGeckoService $coinGeckoService,
-        ): Response
+        CryptoFormService $cryptoFormService,
+        CoinGeckoService $coinGeckoService
+    ): Response
     {
         $form = $this->createForm(CryptoTransactionFormType::class);
-
-        // Automatically set the crypto field to relevent crypto if comming from single crypto page
-        $crypto = $request->query->get('crypto');
-        if ($crypto) {
-            $cryptocurrency = $cryptocurrencyRepository->findOneByCoingeckoId($crypto);
-            $this->logger->info('Cryptocurrency found: ');
-            if ($cryptocurrency) {
-                $form->get('cryptocurrency')->setData($cryptocurrency);
-            }
-        }
+        // Automatically select the cryptocurrency if the coingecko_id is provided
+        $cryptoFormService->handleCryptoSelection($form, $request->query->get('crypto'));
 
         $form->handleRequest($request);
 
         $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $transaction = $form->getData();
-
-            try {
-                $cryptoTransactionService->createTransaction($transaction, $this->getAuthenticatedUser());
+        try {
+            if ($cryptoFormService->processForm($form, $this->getAuthenticatedUser())) {
                 return $this->redirectToRoute('app_user_dashboard');
-            } catch (\InvalidArgumentException $e) {
-                $this->addFlash('error', $e->getMessage());
-            } catch (\Exception $e) {
-                $this->addFlash('error', $this->translator->trans('An error occurred while creating the transaction.'));
             }
-            return $this->redirectToRoute('app_user_crypto_form');
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        } catch (\Exception $e) {
+            $this->addFlash('error', $this->translator->trans('An error occurred while creating the transaction.'));
         }
-
 
         return $this->render('user/crypto-form.html.twig', [
             'cryptoForm'=> $form,

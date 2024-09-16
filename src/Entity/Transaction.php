@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Enum\TransactionType;
 use Doctrine\DBAL\Types\Types;
 
+#[ORM\Table(name: '`transaction`')]
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
 class Transaction
 {

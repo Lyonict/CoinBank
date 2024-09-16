@@ -20,15 +20,18 @@ use App\Service\CryptoFormService;
 use App\Service\CryptoTransactionService;
 use Pagerfanta\Pagerfanta;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 #[Route('/{_locale}/user')]
 class UserController extends AbstractController
 {
     private ?User $user = null;
+    private Security $security;
 
-    public function __construct(private readonly TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator, Security $security)
     {
+        $this->security = $security;
     }
 
     private function getAuthenticatedUser(): User
@@ -93,6 +96,11 @@ class UserController extends AbstractController
     #[Route('/bank', name: 'app_user_bank', methods: ['GET', 'POST'])]
     public function bank(Request $request, UserBankService $userBankService): Response
     {
+        $user = $this->security->getUser();
+        if (!$user instanceof User) {
+            throw new \LogicException('You must be logged in to access this page.');
+        }
+
         $form = $this->createForm(BankFormType::class);
         $form->handleRequest($request);
 

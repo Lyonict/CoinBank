@@ -67,7 +67,7 @@ class TransactionRepository extends ServiceEntityRepository
         $result = $this->createQueryBuilder('t')
             ->select('c.id, c.name, c.symbol, c.coingecko_id,
                 SUM(CASE WHEN t.transactionType = :buyType THEN t.cryptoAmount ELSE -t.cryptoAmount END) as cryptoBalance,
-                SUM(t.dollarAmount) as dollarBalance')
+                SUM(CASE WHEN t.transactionType = :buyType THEN t.dollarAmount ELSE -t.dollarAmount END) as dollarBalance')
             ->join('t.cryptocurrency', 'c')
             ->where('t.user = :user')
             ->groupBy('c.id, c.name')
@@ -77,6 +77,35 @@ class TransactionRepository extends ServiceEntityRepository
             ->getResult();
 
         return array_filter($result, fn($crypto) => $crypto['cryptoBalance'] > 0);
+    }
+
+    /**
+     * Retrieves the cryptocurrency balance for a specific user and cryptocurrency.
+     *
+     * This method calculates the current balance of a specific cryptocurrency owned by the user,
+     * including the total amount of crypto and the total dollar value invested.
+     *
+     * @param User $user The user for whom to retrieve the balance
+     * @param string $coingeckoId The CoinGecko ID of the cryptocurrency
+     * @return array|null An array containing id, name, symbol, coingecko_id, cryptoBalance, and dollarBalance, or null if not found
+     */
+    public function getCryptoBalanceForUserAndCrypto(User $user, string $coingeckoId): ?array
+    {
+        $result = $this->createQueryBuilder('t')
+            ->select('c.id, c.name, c.symbol, c.coingecko_id,
+                SUM(CASE WHEN t.transactionType = :buyType THEN t.cryptoAmount ELSE -t.cryptoAmount END) as cryptoBalance,
+                SUM(CASE WHEN t.transactionType = :buyType THEN t.dollarAmount ELSE -t.dollarAmount END) as dollarBalance')
+            ->join('t.cryptocurrency', 'c')
+            ->where('t.user = :user')
+            ->andWhere('c.coingecko_id = :coingeckoId')
+            ->groupBy('c.id, c.name')
+            ->setParameter('user', $user)
+            ->setParameter('coingeckoId', $coingeckoId)
+            ->setParameter('buyType', TransactionType::BUY)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $result && $result['cryptoBalance'] > 0 ? $result : null;
     }
 
     /**
@@ -92,6 +121,26 @@ class TransactionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('t')
             ->where('t.user = :user')
             ->setParameter('user', $user)
+            ->orderBy('t.date', 'DESC');
+    }
+
+    /**
+     * Creates a QueryBuilder for retrieving all transactions for a given user and cryptocurrency by CoinGecko ID.
+     *
+     * We need to return a QueryBuilder because we need to use the Pagerfanta library to paginate the results.
+     *
+     * @param User $user The user for whom to retrieve the transactions
+     * @param string $coingeckoId The CoinGecko ID of the cryptocurrency
+     * @return QueryBuilder A QueryBuilder object for fetching the user's transactions for the specified cryptocurrency
+     */
+    public function getTransactionForCoinGeckoIdForUser(User $user, string $coingeckoId): QueryBuilder
+    {
+        return $this->createQueryBuilder('t')
+            ->join('t.cryptocurrency', 'c')
+            ->where('t.user = :user')
+            ->andWhere('c.coingecko_id = :coingeckoId')
+            ->setParameter('user', $user)
+            ->setParameter('coingeckoId', $coingeckoId)
             ->orderBy('t.date', 'DESC');
     }
 

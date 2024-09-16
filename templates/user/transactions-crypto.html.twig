@@ -1,0 +1,36 @@
+{% extends 'user-navigation_base.html.twig' %}
+
+{% block title %}CoinBank - Transactions{% endblock %}
+
+{% block user_navigation %}
+    {% with {"selected": "transactions"} %}
+        {{ parent() }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+    <div class="CB-form-container-full my-md-3">
+        <div class="card-body">
+            <h1>{{ cryptoInfo.name }}</h1>
+            <div class="d-flex flex-column flex-md-row-reverse justify-content-between border rounded p-3">
+                {% include 'includes/block/CB_crypto-info_transaction-cryptowidget.html.twig' with {cryptoInfo: cryptoInfo} %}
+                <div class="d-flex flex-column">
+                    <b>{{ 'Estimated balance'|trans }}</b>
+                    <h3>{{ cryptoInfo.cryptoBalance }} {{ cryptoInfo.symbol }}</h3>
+                    <h3>${{ cryptoInfo.currentValue }}</h3>
+                    <div class="CB-crypto-info-profit {% if cryptoInfo.profitPercentage > 0 %}text-success{% elseif cryptoInfo.profitPercentage < 0 %}text-danger{% endif %}">
+                        {% if cryptoInfo.profitPercentage > 0 %}
+                            {{ ux_icon('carbon:growth', {class: 'ms-1'}) }}
+                        {% elseif cryptoInfo.profitPercentage < 0 %}
+                            {{ ux_icon('streamline:graph-arrow-decrease', {class: 'ms-1'}) }}
+                        {% endif %}
+                        <small>{% if cryptoInfo.profitPercentage == 0 %}-{% else %}{{cryptoInfo.profitPercentage}}%{% endif %}</small>
+                    </div>
+                </div>
+            </div>
+            <a href="{{path("app_user_crypto_form")}}" class="btn btn-dark w-100 my-3 d-flex justify-content-center align-items-center">{{ ux_icon('fa6-solid:wallet', {class: "me-2"}) }} {{'Buy/Sell'|trans}}</a>
+            {% include 'includes/block/CB_crypto-info_transactions.html.twig' with {transactions: transactions} %}
+            {{ pagerfanta(transactions, 'twitter_bootstrap5') }}
+        </div>
+    </div>
+{% endblock %}

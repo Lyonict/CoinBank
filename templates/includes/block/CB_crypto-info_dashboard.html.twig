@@ -1,4 +1,4 @@
-<div class="CB-crypto-info-row d-flex row bg-white">
+<a class="CB-crypto-info-row d-flex row bg-white" href="{{path("app_user_transactions_crypto", {coingecko_id: crypto.coingecko_id})}}">
     <div class="CB-crypto-info-name">
         <div class="d-flex align-items-center me-2">
             <img class="crypto-icon" src="{{ asset('images/crypto-icons/' ~ data.coingecko_id ~ '.png') }}" alt="{{data.symbol}} icon">
@@ -23,4 +23,4 @@
         {% endif %}
         <small>{% if data.profitPercentage == 0 %}-{% else %}{{data.profitPercentage}}%{% endif %}</small>
     </div>
-</div>
+</a>

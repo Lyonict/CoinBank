@@ -71,14 +71,14 @@ class UserController extends AbstractController
     public function transactionsCrypto(
         Request $request,
         TransactionRepository $transactionRepository,
-        CoinGeckoService $coinGeckoService,
+        CryptoTransactionService $cryptoTransactionService,
         string $coingecko_id): Response
     {
-        $cryptoInfo = $transactionRepository->getCryptoBalanceForUserAndCrypto($this->getAuthenticatedUser(), $coingecko_id);
-        $cryptoInfo['currentPrice'] = $coinGeckoService->getCryptoCurrentPrice($coingecko_id);
-        $currentValue = $cryptoInfo['cryptoBalance'] * $cryptoInfo['currentPrice'];
-        $cryptoInfo['profitPercentage'] = round(($currentValue - $cryptoInfo['dollarBalance']) / $cryptoInfo['dollarBalance'] * 100, 2);
-        $cryptoInfo['currentValue'] = $currentValue;
+        $cryptoData = $cryptoTransactionService->getSingleCryptoBalance($this->getAuthenticatedUser(), $coingecko_id);
+
+        if (!$cryptoData) {
+            throw $this->createNotFoundException('Cryptocurrency not found');
+        }
         $transactions = Pagerfanta::createForCurrentPageWithMaxPerPage(
             new QueryAdapter($transactionRepository->getTransactionForCoinGeckoIdForUser($this->getAuthenticatedUser(), $coingecko_id)),
             $request->query->get('page', 1),
@@ -87,7 +87,7 @@ class UserController extends AbstractController
 
         return $this->render('user/transactions-crypto.html.twig', [
             'transactions' => $transactions,
-            'cryptoInfo' => $cryptoInfo,
+            'cryptoData' => $cryptoData,
         ]);
     }
 

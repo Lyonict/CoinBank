@@ -48,19 +48,37 @@ class CryptoTransactionService
         return $this->enrichCryptoData($cryptosData, $cryptoPrices);
     }
 
-    private function enrichCryptoData(array $cryptosData, array $cryptoPrices): array
+    public function getSingleCryptoBalance(User $user, string $coingeckoId): ?array
+    {
+        $cryptoPrice = $this->coinGeckoService->getCryptoCurrentPrice($coingeckoId);
+        $cryptoData = $this->transactionRepository->getCryptoBalanceForUserAndCrypto($user, $coingeckoId);
+
+        if (!$cryptoData) {
+            return null;
+        }
+
+        return $this->enrichSingleCryptoData($cryptoData, $cryptoPrice);
+    }
+
+    private function enrichCryptoData(array $cryptoData, array $cryptoPrices): array
     {
         $enrichedCryptoData = [];
-        foreach ($cryptosData as $crypto) {
+        foreach ($cryptoData as $crypto) {
             if (isset($cryptoPrices[$crypto['coingecko_id']])) {
-                $crypto['currentPrice'] = $cryptoPrices[$crypto['coingecko_id']];
-                $currentValue = $crypto['cryptoBalance'] * $crypto['currentPrice'];
-                $crypto['profitPercentage'] = $this->calculateProfitPercentage($currentValue, $crypto['dollarBalance']);
-                $crypto['currentValue'] = $this->formatCurrentValue($currentValue);
-                $enrichedCryptoData[] = $crypto;
+                $enrichedCryptoData[] = $this->enrichSingleCryptoData($crypto, $cryptoPrices[$crypto['coingecko_id']]);
             }
         }
         return $enrichedCryptoData;
+    }
+
+    private function enrichSingleCryptoData(array $crypto, float $currentPrice): array
+    {
+        $crypto['currentPrice'] = $currentPrice;
+        $currentValue = $crypto['cryptoBalance'] * $currentPrice;
+        $crypto['profitPercentage'] = $this->calculateProfitPercentage($currentValue, $crypto['dollarBalance']);
+        $crypto['formattedCurrentValue'] = $this->formatCurrentValue($currentValue);
+        $crypto['currentValue'] = $currentValue;
+        return $crypto;
     }
 
     private function calculateProfitPercentage(float $currentValue, float $dollarBalance): float

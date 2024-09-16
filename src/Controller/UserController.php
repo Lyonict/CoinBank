@@ -19,7 +19,6 @@ use App\Service\CoinGeckoService;
 use App\Service\CryptoFormService;
 use App\Service\CryptoTransactionService;
 use Pagerfanta\Pagerfanta;
-use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -28,7 +27,7 @@ class UserController extends AbstractController
 {
     private ?User $user = null;
 
-    public function __construct(private readonly TranslatorInterface $translator, private readonly LoggerInterface $logger)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
     }
 
@@ -43,7 +42,7 @@ class UserController extends AbstractController
         return $this->user;
     }
 
-    #[Route('', name: 'app_user_dashboard')]
+    #[Route('', name: 'app_user_dashboard', methods: ['GET'])]
     public function index(CryptoTransactionService $cryptoTransactionService): Response
     {
         $cryptoBalances = $cryptoTransactionService->getCryptoBalances($this->getAuthenticatedUser());
@@ -53,7 +52,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/transactions', name: 'app_user_transactions')]
+    #[Route('/transactions', name: 'app_user_transactions', methods: ['GET'])]
     public function transactions(Request $request, TransactionRepository $transactionRepository): Response
     {
         $transactions = Pagerfanta::createForCurrentPageWithMaxPerPage(
@@ -67,7 +66,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/transactions/{coingecko_id}', name: 'app_user_transactions_crypto')]
+    #[Route('/transactions/{coingecko_id}', name: 'app_user_transactions_crypto', methods: ['GET'])]
     public function transactionsCrypto(
         Request $request,
         TransactionRepository $transactionRepository,
@@ -91,7 +90,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/bank', name: 'app_user_bank')]
+    #[Route('/bank', name: 'app_user_bank', methods: ['GET', 'POST'])]
     public function bank(Request $request, UserBankService $userBankService): Response
     {
         $form = $this->createForm(BankFormType::class);
@@ -117,7 +116,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/profile', name: 'app_user_profile')]
+    #[Route('/profile', name: 'app_user_profile', methods: ['GET', 'POST'])]
     public function profile(Request $request, EntityManagerInterface $manager): Response
     {
         $form = $this->createForm(ProfileFormType::class, $this->getAuthenticatedUser());

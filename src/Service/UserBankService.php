@@ -6,6 +6,7 @@ use App\Entity\Cryptocurrency;
 use App\Entity\User;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 class UserBankService
 {
@@ -16,7 +17,9 @@ class UserBankService
     public function __construct(
         EntityManagerInterface $entityManager,
         TranslatorInterface $translator,
-        TransactionRepository $transactionRepository)
+        TransactionRepository $transactionRepository,
+        private readonly LoggerInterface $logger
+    )
     {
         $this->entityManager = $entityManager;
         $this->translator = $translator;
@@ -72,7 +75,7 @@ class UserBankService
 
         $netAmount = $this->transactionRepository->getNetAmountByName($cryptocurrency->getName());
 
-        if ($netAmount === null || $cryptoAmount > $moneyAmount) {
+        if ($netAmount === null || $cryptoAmount > $netAmount) {
             throw new \InvalidArgumentException($this->translator->trans('Insufficient cryptocurrency balance for this sale.'));
         }
 

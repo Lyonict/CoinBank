@@ -40,7 +40,7 @@ class RegistrationService
         // Handle sponsor code
         $sponsorCode = $formData['sponsorCode'];
         if ($sponsorCode) {
-            $sponsor = $this->userRepository->findBySponsorCode($sponsorCode);
+            $sponsor = $this->userRepository->findOneBySponsorCode($sponsorCode);
             if ($sponsor) {
                 $user->setSponsor($sponsor);
             }

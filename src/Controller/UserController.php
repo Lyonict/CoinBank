@@ -14,10 +14,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
 use App\Form\CryptoTransactionFormType;
 use App\Form\ProfileFormType;
+use App\Repository\CryptocurrencyRepository;
 use App\Repository\TransactionRepository;
 use App\Service\CoinGeckoService;
 use App\Service\CryptoTransactionService;
 use Pagerfanta\Pagerfanta;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -26,7 +28,7 @@ class UserController extends AbstractController
 {
     private ?User $user = null;
 
-    public function __construct(private readonly TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator, private readonly LoggerInterface $logger)
     {
     }
 
@@ -153,14 +155,26 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/crypto-form', name: 'app_user_crypto_form')]
+    #[Route('/crypto-form', name: 'app_user_crypto_form', methods: ['GET', 'POST'])]
     public function cryptoForm(
         Request $request,
+        CryptocurrencyRepository $cryptocurrencyRepository,
         CryptoTransactionService $cryptoTransactionService,
         CoinGeckoService $coinGeckoService,
         ): Response
     {
         $form = $this->createForm(CryptoTransactionFormType::class);
+
+        // Automatically set the crypto field to relevent crypto if comming from single crypto page
+        $crypto = $request->query->get('crypto');
+        if ($crypto) {
+            $cryptocurrency = $cryptocurrencyRepository->findOneByCoingeckoId($crypto);
+            $this->logger->info('Cryptocurrency found: ');
+            if ($cryptocurrency) {
+                $form->get('cryptocurrency')->setData($cryptocurrency);
+            }
+        }
+
         $form->handleRequest($request);
 
         $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();

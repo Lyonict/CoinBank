@@ -28,7 +28,7 @@
                     </div>
                 </div>
             </div>
-            <a href="{{path("app_user_crypto_form")}}" class="btn btn-dark w-100 my-3 d-flex justify-content-center align-items-center">{{ ux_icon('fa6-solid:wallet', {class: "me-2"}) }} {{'Buy/Sell'|trans}}</a>
+            <a href="{{path("app_user_crypto_form", {'crypto': cryptoInfo.coingecko_id})}}" class="btn btn-dark w-100 my-3 d-flex justify-content-center align-items-center">{{ ux_icon('fa6-solid:wallet', {class: "me-2"}) }} {{'Buy/Sell'|trans}}</a>
             {% include 'includes/block/CB_crypto-info_transactions.html.twig' with {transactions: transactions} %}
             {{ pagerfanta(transactions, 'twitter_bootstrap5') }}
         </div>

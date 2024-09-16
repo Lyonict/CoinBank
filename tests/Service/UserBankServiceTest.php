@@ -3,6 +3,7 @@
 namespace App\Tests\Service;
 
 use App\Entity\User;
+use App\Repository\TransactionRepository;
 use App\Service\UserBankService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -13,12 +14,14 @@ class UserBankServiceTest extends TestCase
     private EntityManagerInterface $entityManager;
     private TranslatorInterface $translator;
     private UserBankService $userBankService;
+    private TransactionRepository $transactionRepository;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
-        $this->userBankService = new UserBankService($this->entityManager, $this->translator);
+        $this->transactionRepository = $this->createMock(TransactionRepository::class);
+        $this->userBankService = new UserBankService($this->entityManager, $this->translator, $this->transactionRepository);
     }
 
     /**

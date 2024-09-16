@@ -10,20 +10,13 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 class UserBankService
 {
-    private $entityManager;
-    private $translator;
-    private $transactionRepository;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        TranslatorInterface $translator,
-        TransactionRepository $transactionRepository,
-        private readonly LoggerInterface $logger
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
+        private readonly TransactionRepository $transactionRepository,
     )
     {
-        $this->entityManager = $entityManager;
-        $this->translator = $translator;
-        $this->transactionRepository = $transactionRepository;
     }
 
     public function updateUserBank(User $user, float $amount, string $bankTransactionMode): void

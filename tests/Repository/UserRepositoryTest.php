@@ -23,7 +23,7 @@ class UserRepositoryTest extends KernelTestCase
         $this->userRepository = $this->entityManager->getRepository(User::class);
     }
 
-    public function testFindBySponsorCode(): void
+    public function testFindOneBySponsorCode(): void
     {
         // Create a test user with a sponsor code
         // Create a test user
@@ -39,12 +39,12 @@ class UserRepositoryTest extends KernelTestCase
         $this->entityManager->flush();
 
         // Test finding the user by sponsor code
-        $foundUser = $this->userRepository->findBySponsorCode('TEST123');
+        $foundUser = $this->userRepository->findOneBySponsorCode('TEST123');
         $this->assertInstanceOf(User::class, $foundUser);
         $this->assertEquals('TEST123', $foundUser->getSponsorCode());
 
         // Test with non-existent sponsor code
-        $nonExistentUser = $this->userRepository->findBySponsorCode('NONEXISTENT');
+        $nonExistentUser = $this->userRepository->findOneBySponsorCode('NONEXISTENT');
         $this->assertNull($nonExistentUser);
     }
 

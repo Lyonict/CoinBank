@@ -49,7 +49,7 @@ class ValidSponsorCodeValidatorTest extends TestCase
         $sponsorCode = 'VALID_CODE';
 
         $this->userRepository->expects($this->once())
-            ->method('findBySponsorCode')
+            ->method('findOneBySponsorCode')
             ->with($sponsorCode)
             ->willReturn(new User());
 
@@ -65,7 +65,7 @@ class ValidSponsorCodeValidatorTest extends TestCase
         $sponsorCode = 'INVALID_CODE';
 
         $this->userRepository->expects($this->once())
-            ->method('findBySponsorCode')
+            ->method('findOneBySponsorCode')
             ->with($sponsorCode)
             ->willReturn(null);
 
@@ -90,7 +90,7 @@ class ValidSponsorCodeValidatorTest extends TestCase
         $constraint = new ValidSponsorCode();
 
         $this->userRepository->expects($this->never())
-            ->method('findBySponsorCode');
+            ->method('findOneBySponsorCode');
 
         $this->context->expects($this->never())
             ->method('buildViolation');
@@ -103,7 +103,7 @@ class ValidSponsorCodeValidatorTest extends TestCase
         $constraint = new ValidSponsorCode();
 
         $this->userRepository->expects($this->never())
-            ->method('findBySponsorCode');
+            ->method('findOneBySponsorCode');
 
         $this->context->expects($this->never())
             ->method('buildViolation');

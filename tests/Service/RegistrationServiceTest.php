@@ -63,7 +63,7 @@ class RegistrationServiceTest extends TestCase
             ->willReturn('en');
 
         $this->userRepository->expects($this->once())
-            ->method('findBySponsorCode')
+            ->method('findOneBySponsorCode')
             ->with($generatedSponsorCode)
             ->willReturn(new User());
 

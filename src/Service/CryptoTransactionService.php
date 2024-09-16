@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Transaction;
 use App\Entity\User;
 use App\Enum\TransactionType;
+use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -12,6 +13,7 @@ class CryptoTransactionService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private TransactionRepository $transactionRepository,
         private CoinGeckoService $coinGeckoService,
         private UserBankService $userBankService,
         private TranslatorInterface $translator
@@ -36,5 +38,44 @@ class CryptoTransactionService
 
         $this->entityManager->persist($transaction);
         $this->entityManager->flush();
+    }
+
+    public function getCryptoBalances(User $user): array
+    {
+        $cryptoPrices = $this->coinGeckoService->getAllCryptoCurrentPrice();
+        $cryptosData = $this->transactionRepository->getCryptosOfUserWithBalance($user);
+
+        return $this->enrichCryptoData($cryptosData, $cryptoPrices);
+    }
+
+    private function enrichCryptoData(array $cryptosData, array $cryptoPrices): array
+    {
+        $enrichedCryptoData = [];
+        foreach ($cryptosData as $crypto) {
+            if (isset($cryptoPrices[$crypto['coingecko_id']])) {
+                $crypto['currentPrice'] = $cryptoPrices[$crypto['coingecko_id']];
+                $currentValue = $crypto['cryptoBalance'] * $crypto['currentPrice'];
+                $crypto['profitPercentage'] = $this->calculateProfitPercentage($currentValue, $crypto['dollarBalance']);
+                $crypto['currentValue'] = $this->formatCurrentValue($currentValue);
+                $enrichedCryptoData[] = $crypto;
+            }
+        }
+        return $enrichedCryptoData;
+    }
+
+    private function calculateProfitPercentage(float $currentValue, float $dollarBalance): float
+    {
+        return round(($currentValue - $dollarBalance) / $dollarBalance * 100, 2);
+    }
+
+    private function formatCurrentValue(float $currentValue): string
+    {
+        if ($currentValue >= 1000000) {
+            return number_format($currentValue / 1000000, 2) . 'M';
+        } elseif ($currentValue >= 1000) {
+            return number_format($currentValue / 1000, 2) . 'k';
+        } else {
+            return number_format($currentValue, 2);
+        }
     }
 }

@@ -14,12 +14,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
 use App\Form\CryptoTransactionFormType;
 use App\Form\ProfileFormType;
-use App\Repository\CryptocurrencyRepository;
 use App\Repository\TransactionRepository;
 use App\Service\CoinGeckoService;
 use App\Service\CryptoFormService;
 use App\Service\CryptoTransactionService;
-use App\Service\DashboardService;
 use Pagerfanta\Pagerfanta;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -46,9 +44,9 @@ class UserController extends AbstractController
     }
 
     #[Route('', name: 'app_user_dashboard')]
-    public function index(DashboardService $dashboardService): Response
+    public function index(CryptoTransactionService $cryptoTransactionService): Response
     {
-        $cryptoBalances = $dashboardService->getCryptoBalances($this->getAuthenticatedUser());
+        $cryptoBalances = $cryptoTransactionService->getCryptoBalances($this->getAuthenticatedUser());
 
         return $this->render('user/dashboard.html.twig', [
             'cryptoBalances' => $cryptoBalances,

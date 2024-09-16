@@ -55,3 +55,16 @@ Sell: Vendre
 Amount(Coin): Montant(Crypto)
 Amount($): Montant($)
 Buy/Sell: Acheter/Vendre
+Name: Nom
+Type: Type
+'Crypto amount': 'Montant en crypto'
+'Dollar value': 'Valeur en dollars'
+Date: Date
+'No transactions on this account yet': 'Aucune transaction sur ce compte pour le moment'
+'Empty wallet image': 'Image de portefeuille vide'
+Price: Prix
+Owned: Possédé
+Value: Valeur
+Evolution: Évolution
+'Estimated balance': 'Solde estimé'
+'No crypto in wallet': 'Aucune crypto dans le portefeuille'

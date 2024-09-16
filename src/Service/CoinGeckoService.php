@@ -41,7 +41,7 @@ class CoinGeckoService
         }
 
         try {
-            $supportedCryptos = $this->cryptoRepository->findCoinGeckoIds();
+            $supportedCryptos = $this->cryptoRepository->findCoingeckoIds();
             $response = $this->geckoApiCall('coins/markets?vs_currency=usd');
             $decodedResult = json_decode($response->getBody(), true);
 

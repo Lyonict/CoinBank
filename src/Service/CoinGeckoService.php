@@ -63,6 +63,21 @@ class CoinGeckoService
         }
     }
 
+    public function getCryptoCurrentPrice(string $coingecko_id) {
+        if (!$this->getPing()) {
+            return false;
+        }
+
+        try {
+            $response = $this->geckoApiCall("coins/$coingecko_id");
+            $decodedResult = json_decode($response->getBody(), true);
+            $currentPrice = $decodedResult['market_data']['current_price']['usd'] ?? null;
+            return $currentPrice;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     private function geckoApiCall(string $endpoint) {
         $response = $this->client->request('GET',"https://api.coingecko.com/api/v3/$endpoint", [
             'headers' => [

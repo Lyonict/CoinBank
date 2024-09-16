@@ -59,3 +59,117 @@ body {
     height: 600px;
   }
 }
+
+.tradingview-widget-container.small-widget {
+  height: 220px;
+}
+
+.CB-crypto-info-container {
+  @extend .container;
+  @extend .py-3;
+
+  .CB-crypto-info-row {
+    @extend .p-1;
+    @extend .p-lg-3;
+    border: 1px solid;
+    @extend .border-secondary-subtle;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 1rem; // Add bottom margin to all rows
+    color: inherit;
+    text-decoration: none;
+
+    &:last-child {
+      margin-bottom: 0; // Remove bottom margin from the last row
+    }
+
+    &:not(.simple-card) {
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.17);
+
+        &:active {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.13);
+        }
+      }
+    }
+  }
+}
+
+.crypto-icon {
+  max-height: 40px;
+}
+
+.coin-code {
+  margin-bottom: -6px;
+}
+
+.CB-crypto-info-container-header,
+.CB-crypto-info-container {
+  .CB-crypto-info-name {
+    display: flex;
+    align-items: center;
+    @extend .col-5;
+    @extend .col-md-6;
+    @extend .col-lg-4;
+  }
+
+  .CB-crypto-info-price {
+    display: none;
+    align-items: center;
+    @extend .col-lg-2;
+    @include media-breakpoint-up(lg) {
+      display: flex;
+    }
+  }
+
+  .CB-crypto-info-balance {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    @include media-breakpoint-up(lg) {
+      flex-direction: row;
+      align-items: center;
+    }
+    @extend .col-4;
+    @extend .col-md-3;
+    @extend .col-lg-4;
+
+    .CB-crypto-info-balance-data {
+      @include media-breakpoint-up(lg) {
+        width: 50%;
+      }
+    }
+  }
+
+  .CB-crypto-info-profit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    @include media-breakpoint-up(lg) {
+      flex-direction: row-reverse;
+    }
+    @extend .col-3;
+    @extend .col-lg-2;
+  }
+}
+
+.CB-crypto-info-empty-wallet {
+  border: 1px solid;
+  border-style: dashed;
+  @extend .border-secondary-subtle;
+  @extend .rounded;
+  @extend .p-3;
+  @extend .my-3;
+  @extend .text-muted;
+  img {
+    max-height: 50px;
+    @extend .me-3;
+  }
+  p {
+    margin: 0;
+  }
+}

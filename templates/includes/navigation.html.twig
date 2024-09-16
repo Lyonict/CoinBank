@@ -7,7 +7,7 @@
             </a>
         </li>
         <li>
-            <a href="" class="btn {{ selected == 'transactions' ? 'btn-dark' : 'btn-outline-dark' }}">
+            <a href="{{ path('app_user_transactions') }}" class="btn {{ selected == 'transactions' ? 'btn-dark' : 'btn-outline-dark' }}">
                 {{ ux_icon('fa6-solid:clock-rotate-left') }}
                 {{ 'Transactions'|trans }}
             </a>
@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'dashboard':
                 window.location.href = "{{ path('app_user_dashboard') }}";
                 break;
-            {# case 'transactions':
+            case 'transactions':
                 window.location.href = "{{ path('app_user_transactions') }}";
-                break; #}
+                break;
             case 'bank':
                 window.location.href = "{{ path('app_user_bank') }}";
                 break;

@@ -1,0 +1,26 @@
+<a class="CB-crypto-info-row d-flex row bg-white" href="{{path("app_user_transactions_crypto", {coingecko_id: crypto.coingecko_id})}}">
+    <div class="CB-crypto-info-name">
+        <div class="d-flex align-items-center me-2">
+            <img class="crypto-icon" src="{{ asset('images/crypto-icons/' ~ data.coingecko_id ~ '.png') }}" alt="{{data.symbol}} icon">
+        </div>
+        <div class="d-flex flex-column">
+            <b class="coin-code">{{data.symbol}}</b>
+            <small>{{data.name}}</small>
+        </div>
+    </div>
+    <div class="CB-crypto-info-price">
+        <small>${{data.currentPrice}}</small>
+    </div>
+    <div class="CB-crypto-info-balance">
+        <b class="CB-crypto-info-balance-data">{{data.cryptoBalance}}</b>
+        <b class="CB-crypto-info-balance-data">${{data.currentValue}}</b>
+    </div>
+    <div class="CB-crypto-info-profit {% if data.profitPercentage > 0 %}text-success{% elseif data.profitPercentage < 0 %}text-danger{% endif %}">
+        {% if data.profitPercentage > 0 %}
+            {{ ux_icon('carbon:growth', {class: 'ms-1'}) }}
+        {% elseif data.profitPercentage < 0 %}
+            {{ ux_icon('streamline:graph-arrow-decrease', {class: 'ms-1'}) }}
+        {% endif %}
+        <small>{% if data.profitPercentage == 0 %}-{% else %}{{data.profitPercentage}}%{% endif %}</small>
+    </div>
+</a>

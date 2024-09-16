@@ -55,3 +55,16 @@ Sell: Sell
 Amount(Coin): Amount(Coin)
 Amount($): Amount($)
 Buy/Sell: Buy/Sell
+Name: Name
+Type: Type
+'Crypto amount': 'Crypto amount'
+'Dollar value': 'Dollar value'
+Date: Date
+'No transactions on this account yet': 'No transactions on this account yet'
+'Empty wallet image': 'Empty wallet image'
+Price: Price
+Owned: Owned
+Value: Value
+Evolution: Evolution
+'Estimated balance': 'Estimated balance'
+'No crypto in wallet': 'No crypto in wallet'

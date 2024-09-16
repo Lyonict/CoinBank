@@ -21,6 +21,17 @@
             </div>
 
             <a href="{{path("app_user_crypto_form")}}" class="btn btn-dark w-100 my-3 d-flex justify-content-center align-items-center">{{ ux_icon('fa6-solid:wallet', {class: "me-2"}) }} {{'Buy/Sell'|trans}}</a>
+
+            {% if cryptoBalances|length > 0 %}
+                <div class="CB-crypto-info-container">
+                    {% include 'includes/block/CB_crypto-info_dashboard-header.html.twig' %}
+                    {% for crypto in cryptoBalances %}
+                        {% include 'includes/block/CB_crypto-info_dashboard.html.twig' with {data: crypto} %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% include 'includes/block/CB_crypto-info_empty-indicator.html.twig' with {message: 'No crypto in wallet'|trans} %}
+            {% endif %}
         </div>
 
     </div>

@@ -2,6 +2,7 @@
 
 namespace App\Entity\Tests;
 
+use App\Entity\Transaction;
 use App\Entity\User;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
@@ -116,5 +117,34 @@ class UserTest extends TestCase
         $this->user->eraseCredentials();
         // After erasing credentials, the password should remain unchanged
         $this->assertSame($password, $this->user->getPassword());
+    }
+
+    public function testTransactions(): void
+    {
+        $transaction1 = new Transaction();
+        $transaction2 = new Transaction();
+
+        // Initially, the transactions collection should be empty
+        $this->assertEmpty($this->user->getTransactions());
+
+        // Add transactions
+        $this->user->addTransaction($transaction1);
+        $this->user->addTransaction($transaction2);
+
+        // Check if the transactions were added correctly
+        $transactions = $this->user->getTransactions();
+        $this->assertCount(2, $transactions);
+        $this->assertContains($transaction1, $transactions);
+        $this->assertContains($transaction2, $transactions);
+
+        // Test removing a transaction
+        $this->user->removeTransaction($transaction1);
+        $this->assertCount(1, $this->user->getTransactions());
+        $this->assertNotContains($transaction1, $this->user->getTransactions());
+        $this->assertContains($transaction2, $this->user->getTransactions());
+
+        // Test that adding the same transaction twice doesn't duplicate it
+        $this->user->addTransaction($transaction2);
+        $this->assertCount(1, $this->user->getTransactions());
     }
 }

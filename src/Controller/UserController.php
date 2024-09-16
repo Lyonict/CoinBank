@@ -19,6 +19,7 @@ use App\Repository\TransactionRepository;
 use App\Service\CoinGeckoService;
 use App\Service\CryptoFormService;
 use App\Service\CryptoTransactionService;
+use App\Service\DashboardService;
 use Pagerfanta\Pagerfanta;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -45,32 +46,12 @@ class UserController extends AbstractController
     }
 
     #[Route('', name: 'app_user_dashboard')]
-    public function index(TransactionRepository $transactionRepository, CoinGeckoService $coinGeckoService,): Response
+    public function index(DashboardService $dashboardService): Response
     {
-        $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();
-
-        $cryptoBalances = $transactionRepository->getCryptoBalancesForUser($this->getAuthenticatedUser());
-
-        $updatedCryptoBalances = [];
-        foreach ($cryptoBalances as $balance) {
-            if (isset($cryptoPrices[$balance['coingecko_id']])) {
-                $balance['currentPrice'] = $cryptoPrices[$balance['coingecko_id']];
-                $currentValue = $balance['cryptoBalance'] * $balance['currentPrice'];
-                $balance['profitPercentage'] = round(($currentValue - $balance['dollarBalance']) / $balance['dollarBalance'] * 100, 2);
-                if ($currentValue >= 1000000) {
-                    $balance['currentValue'] = number_format($currentValue / 1000000, 2) . 'M';
-                } elseif ($currentValue >= 1000) {
-                    $balance['currentValue'] = number_format($currentValue / 1000, 2) . 'k';
-                } else {
-                    $balance['currentValue'] = number_format($currentValue, 2);
-                }
-                $updatedCryptoBalances[] = $balance;
-            }
-        }
-        $cryptoBalances = $updatedCryptoBalances;
+        $cryptoBalances = $dashboardService->getCryptoBalances($this->getAuthenticatedUser());
 
         return $this->render('user/dashboard.html.twig', [
-            'cryptoBalances'=> $cryptoBalances,
+            'cryptoBalances' => $cryptoBalances,
         ]);
     }
 

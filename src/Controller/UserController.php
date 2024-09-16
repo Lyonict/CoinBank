@@ -79,7 +79,7 @@ class UserController extends AbstractController
             throw $this->createNotFoundException('Cryptocurrency not found');
         }
         $transactions = Pagerfanta::createForCurrentPageWithMaxPerPage(
-            new QueryAdapter($transactionRepository->getTransactionForCoinGeckoIdForUser($this->getAuthenticatedUser(), $coingecko_id)),
+            new QueryAdapter($transactionRepository->getTransactionsForUserAndCoinGeckoId($this->getAuthenticatedUser(), $coingecko_id)),
             $request->query->get('page', 1),
             10
         );

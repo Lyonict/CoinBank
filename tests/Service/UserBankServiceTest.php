@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service;
 
+use App\Entity\Cryptocurrency;
 use App\Entity\User;
 use App\Repository\TransactionRepository;
 use App\Service\UserBankService;
@@ -68,12 +69,91 @@ class UserBankServiceTest extends TestCase
     }
 
     public function testDepositMoreThan100000ThrowsException(): void
-{
-    $user = new User();
-    $user->setBank(50000);
+    {
+        $user = new User();
+        $user->setBank(50000);
 
-    $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
-    $this->userBankService->updateUserBank($user, 51000, 'deposit');
-}
+        $this->userBankService->updateUserBank($user, 51000, 'deposit');
+    }
+
+    public function testProcessCryptoBuy(): void
+    {
+        $user = new User();
+        $user->setBank(1000);
+
+        $this->userBankService->processCryptoBuy($user, 500);
+
+        $this->assertEquals(500, $user->getBank());
+    }
+
+    public function testProcessCryptoBuyInsufficientFunds(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $user = new User();
+        $user->setBank(100);
+
+        $this->userBankService->processCryptoBuy($user, 500);
+    }
+
+    public function testProcessCryptoBuyNegativeAmount(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $user = new User();
+        $user->setBank(1000);
+
+        $this->userBankService->processCryptoBuy($user, -500);
+    }
+
+    public function testProcessCryptoSell(): void
+    {
+        $user = new User();
+        $user->setBank(1000);
+
+        $cryptocurrency = new Cryptocurrency();
+        $cryptocurrency->setName('Bitcoin');
+
+        $this->transactionRepository->expects($this->once())
+            ->method('getNetAmountByName')
+            ->with('Bitcoin')
+            ->willReturn(1.0);
+
+        $this->userBankService->processCryptoSell($user, $cryptocurrency, 0.5, 500);
+
+        $this->assertEquals(1500, $user->getBank());
+    }
+
+    public function testProcessCryptoSellInsufficientCrypto(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $user = new User();
+        $user->setBank(1000);
+
+        $cryptocurrency = new Cryptocurrency();
+        $cryptocurrency->setName('Bitcoin');
+
+        $this->transactionRepository->expects($this->once())
+            ->method('getNetAmountByName')
+            ->with('Bitcoin')
+            ->willReturn(0.1);
+
+        $this->userBankService->processCryptoSell($user, $cryptocurrency, 0.5, 500);
+    }
+
+    public function testProcessCryptoSellNegativeAmount(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $user = new User();
+        $user->setBank(1000);
+
+        $cryptocurrency = new Cryptocurrency();
+        $cryptocurrency->setName('Bitcoin');
+
+        $this->userBankService->processCryptoSell($user, $cryptocurrency, -0.5, 500);
+    }
 }

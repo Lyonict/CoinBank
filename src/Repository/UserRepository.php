@@ -20,7 +20,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * Used to upgrade (rehash) the user's password automatically over time.
+     * Upgrades the user's password hash to a newer, more secure version.
+     *
+     * This method is part of Symfony's password upgrading mechanism. It's called
+     * automatically when a user logs in, allowing the application to upgrade
+     * password hashes to newer algorithms over time without user intervention.
+     *
+     * @param PasswordAuthenticatedUserInterface $user The user whose password needs upgrading
+     * @param string $newHashedPassword The new hashed password
+     * @throws UnsupportedUserException If the user is not an instance of the User entity
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
@@ -33,10 +41,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-     /**
-     * Used to find user by sponsor code during registration
+    /**
+     * Finds a user by their unique sponsor code.
+     *
+     * This method is typically used during the registration process to associate
+     * a new user with their sponsor. It queries the database for a user with the
+     * given sponsor code.
+     *
+     * @param string $sponsorCode The unique sponsor code to search for
+     * @return User|null Returns the User entity if found, or null if no user matches the sponsor code
      */
-    public function findBySponsorCode(string $sponsorCode): ?User
+    public function findOneBySponsorCode(string $sponsorCode): ?User
     {
         return $this->createQueryBuilder('u')
             ->andWhere('u.sponsorCode = :sponsorCode')
@@ -45,29 +60,4 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getOneOrNullResult()
             ;
     }
-
-    //    /**
-    //     * @return User[] Returns an array of User objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?User
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

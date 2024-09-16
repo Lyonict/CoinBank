@@ -14,12 +14,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
 use App\Form\CryptoTransactionFormType;
 use App\Form\ProfileFormType;
-use App\Repository\CryptocurrencyRepository;
 use App\Repository\TransactionRepository;
 use App\Service\CoinGeckoService;
+use App\Service\CryptoFormService;
 use App\Service\CryptoTransactionService;
 use Pagerfanta\Pagerfanta;
-use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -28,7 +27,7 @@ class UserController extends AbstractController
 {
     private ?User $user = null;
 
-    public function __construct(private readonly TranslatorInterface $translator, private readonly LoggerInterface $logger)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
     }
 
@@ -43,37 +42,17 @@ class UserController extends AbstractController
         return $this->user;
     }
 
-    #[Route('', name: 'app_user_dashboard')]
-    public function index(TransactionRepository $transactionRepository, CoinGeckoService $coinGeckoService,): Response
+    #[Route('', name: 'app_user_dashboard', methods: ['GET'])]
+    public function index(CryptoTransactionService $cryptoTransactionService): Response
     {
-        $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();
-
-        $cryptoBalances = $transactionRepository->getCryptoBalancesForUser($this->getAuthenticatedUser());
-
-        $updatedCryptoBalances = [];
-        foreach ($cryptoBalances as $balance) {
-            if (isset($cryptoPrices[$balance['coingecko_id']])) {
-                $balance['currentPrice'] = $cryptoPrices[$balance['coingecko_id']];
-                $currentValue = $balance['cryptoBalance'] * $balance['currentPrice'];
-                $balance['profitPercentage'] = round(($currentValue - $balance['dollarBalance']) / $balance['dollarBalance'] * 100, 2);
-                if ($currentValue >= 1000000) {
-                    $balance['currentValue'] = number_format($currentValue / 1000000, 2) . 'M';
-                } elseif ($currentValue >= 1000) {
-                    $balance['currentValue'] = number_format($currentValue / 1000, 2) . 'k';
-                } else {
-                    $balance['currentValue'] = number_format($currentValue, 2);
-                }
-                $updatedCryptoBalances[] = $balance;
-            }
-        }
-        $cryptoBalances = $updatedCryptoBalances;
+        $cryptoBalances = $cryptoTransactionService->getCryptoBalances($this->getAuthenticatedUser());
 
         return $this->render('user/dashboard.html.twig', [
-            'cryptoBalances'=> $cryptoBalances,
+            'cryptoBalances' => $cryptoBalances,
         ]);
     }
 
-    #[Route('/transactions', name: 'app_user_transactions')]
+    #[Route('/transactions', name: 'app_user_transactions', methods: ['GET'])]
     public function transactions(Request $request, TransactionRepository $transactionRepository): Response
     {
         $transactions = Pagerfanta::createForCurrentPageWithMaxPerPage(
@@ -87,31 +66,31 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/transactions/{coingecko_id}', name: 'app_user_transactions_crypto')]
+    #[Route('/transactions/{coingecko_id}', name: 'app_user_transactions_crypto', methods: ['GET'])]
     public function transactionsCrypto(
         Request $request,
         TransactionRepository $transactionRepository,
-        CoinGeckoService $coinGeckoService,
+        CryptoTransactionService $cryptoTransactionService,
         string $coingecko_id): Response
     {
-        $cryptoInfo = $transactionRepository->getCryptoBalanceForUserAndCrypto($this->getAuthenticatedUser(), $coingecko_id);
-        $cryptoInfo['currentPrice'] = $coinGeckoService->getCryptoCurrentPrice($coingecko_id);
-        $currentValue = $cryptoInfo['cryptoBalance'] * $cryptoInfo['currentPrice'];
-        $cryptoInfo['profitPercentage'] = round(($currentValue - $cryptoInfo['dollarBalance']) / $cryptoInfo['dollarBalance'] * 100, 2);
-        $cryptoInfo['currentValue'] = $currentValue;
+        $cryptoData = $cryptoTransactionService->getSingleCryptoBalance($this->getAuthenticatedUser(), $coingecko_id);
+
+        if (!$cryptoData) {
+            throw $this->createNotFoundException('Cryptocurrency not found');
+        }
         $transactions = Pagerfanta::createForCurrentPageWithMaxPerPage(
-            new QueryAdapter($transactionRepository->getTransactionForCoinGeckoIdForUser($this->getAuthenticatedUser(), $coingecko_id)),
+            new QueryAdapter($transactionRepository->getTransactionsForUserAndCoinGeckoId($this->getAuthenticatedUser(), $coingecko_id)),
             $request->query->get('page', 1),
             10
         );
 
         return $this->render('user/transactions-crypto.html.twig', [
             'transactions' => $transactions,
-            'cryptoInfo' => $cryptoInfo,
+            'cryptoData' => $cryptoData,
         ]);
     }
 
-    #[Route('/bank', name: 'app_user_bank')]
+    #[Route('/bank', name: 'app_user_bank', methods: ['GET', 'POST'])]
     public function bank(Request $request, UserBankService $userBankService): Response
     {
         $form = $this->createForm(BankFormType::class);
@@ -137,7 +116,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/profile', name: 'app_user_profile')]
+    #[Route('/profile', name: 'app_user_profile', methods: ['GET', 'POST'])]
     public function profile(Request $request, EntityManagerInterface $manager): Response
     {
         $form = $this->createForm(ProfileFormType::class, $this->getAuthenticatedUser());
@@ -158,41 +137,27 @@ class UserController extends AbstractController
     #[Route('/crypto-form', name: 'app_user_crypto_form', methods: ['GET', 'POST'])]
     public function cryptoForm(
         Request $request,
-        CryptocurrencyRepository $cryptocurrencyRepository,
-        CryptoTransactionService $cryptoTransactionService,
-        CoinGeckoService $coinGeckoService,
-        ): Response
+        CryptoFormService $cryptoFormService,
+        CoinGeckoService $coinGeckoService
+    ): Response
     {
         $form = $this->createForm(CryptoTransactionFormType::class);
-
-        // Automatically set the crypto field to relevent crypto if comming from single crypto page
-        $crypto = $request->query->get('crypto');
-        if ($crypto) {
-            $cryptocurrency = $cryptocurrencyRepository->findOneByCoingeckoId($crypto);
-            $this->logger->info('Cryptocurrency found: ');
-            if ($cryptocurrency) {
-                $form->get('cryptocurrency')->setData($cryptocurrency);
-            }
-        }
+        // Automatically select the cryptocurrency if the coingecko_id is provided
+        $cryptoFormService->handleCryptoSelection($form, $request->query->get('crypto'));
 
         $form->handleRequest($request);
 
         $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $transaction = $form->getData();
-
-            try {
-                $cryptoTransactionService->createTransaction($transaction, $this->getAuthenticatedUser());
+        try {
+            if ($cryptoFormService->processForm($form, $this->getAuthenticatedUser())) {
                 return $this->redirectToRoute('app_user_dashboard');
-            } catch (\InvalidArgumentException $e) {
-                $this->addFlash('error', $e->getMessage());
-            } catch (\Exception $e) {
-                $this->addFlash('error', $this->translator->trans('An error occurred while creating the transaction.'));
             }
-            return $this->redirectToRoute('app_user_crypto_form');
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        } catch (\Exception $e) {
+            $this->addFlash('error', $this->translator->trans('An error occurred while creating the transaction.'));
         }
-
 
         return $this->render('user/crypto-form.html.twig', [
             'cryptoForm'=> $form,

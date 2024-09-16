@@ -62,7 +62,7 @@ class TransactionRepository extends ServiceEntityRepository
      * @return array An array of cryptocurrency balances, each containing id, name, symbol,
      *               coingecko_id, cryptoBalance, and dollarBalance
      */
-    public function getCryptoBalancesForUser(User $user): array
+    public function getCryptosOfUserWithBalance(User $user): array
     {
         $result = $this->createQueryBuilder('t')
             ->select('c.id, c.name, c.symbol, c.coingecko_id,
@@ -80,7 +80,8 @@ class TransactionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retrieves the cryptocurrency balance for a specific user and cryptocurrency.
+     * Retrieves the cryptocurrency information for a specific user and cryptocurrency.
+     * Also add the balance of both crypto and dollar to the resulting array
      *
      * This method calculates the current balance of a specific cryptocurrency owned by the user,
      * including the total amount of crypto and the total dollar value invested.
@@ -133,7 +134,7 @@ class TransactionRepository extends ServiceEntityRepository
      * @param string $coingeckoId The CoinGecko ID of the cryptocurrency
      * @return QueryBuilder A QueryBuilder object for fetching the user's transactions for the specified cryptocurrency
      */
-    public function getTransactionForCoinGeckoIdForUser(User $user, string $coingeckoId): QueryBuilder
+    public function getTransactionsForUserAndCoinGeckoId(User $user, string $coingeckoId): QueryBuilder
     {
         return $this->createQueryBuilder('t')
             ->join('t.cryptocurrency', 'c')
@@ -143,29 +144,4 @@ class TransactionRepository extends ServiceEntityRepository
             ->setParameter('coingeckoId', $coingeckoId)
             ->orderBy('t.date', 'DESC');
     }
-
-    //    /**
-    //     * @return Transaction[] Returns an array of Transaction objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('t.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Transaction
-    //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

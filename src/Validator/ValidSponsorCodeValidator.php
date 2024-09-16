@@ -26,7 +26,7 @@ class ValidSponsorCodeValidator extends ConstraintValidator
             return;
         }
 
-        $sponsor = $this->userRepository->findBySponsorCode($value);
+        $sponsor = $this->userRepository->findOneBySponsorCode($value);
 
         if (!$sponsor) {
             $this->context->buildViolation($constraint->message)

@@ -13,7 +13,7 @@
     </div>
     <div class="CB-crypto-info-balance">
         <b class="CB-crypto-info-balance-data">{{data.cryptoBalance}}</b>
-        <b class="CB-crypto-info-balance-data">${{data.currentValue}}</b>
+        <b class="CB-crypto-info-balance-data">${{data.formattedCurrentValue}}</b>
     </div>
     <div class="CB-crypto-info-profit {% if data.profitPercentage > 0 %}text-success{% elseif data.profitPercentage < 0 %}text-danger{% endif %}">
         {% if data.profitPercentage > 0 %}

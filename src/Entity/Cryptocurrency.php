@@ -24,7 +24,7 @@ class Cryptocurrency
     /**
      * @var Collection<int, Transaction>
      */
-    #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'Cryptocurrency')]
+    #[ORM\OneToMany(mappedBy: 'cryptocurrency', targetEntity: Transaction::class)]
     private Collection $transactions;
 
     #[ORM\Column(length: 40)]

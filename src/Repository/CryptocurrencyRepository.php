@@ -17,9 +17,9 @@ class CryptocurrencyRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return string[] Returns an array of all cryptocurrency coingecko_id
+     * @return array<string> Returns an array of all cryptocurrency coingecko_id
      */
-    public function findCoinGeckoIds(): array
+    public function findCoingeckoIds(): array
     {
         return $this->createQueryBuilder('c')
             ->select('c.coingecko_id')
@@ -52,29 +52,4 @@ class CryptocurrencyRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
-
-    //    /**
-    //     * @return Cryptocurrency[] Returns an array of Cryptocurrency objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Cryptocurrency
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

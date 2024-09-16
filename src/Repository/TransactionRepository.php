@@ -62,7 +62,7 @@ class TransactionRepository extends ServiceEntityRepository
      * @return array An array of cryptocurrency balances, each containing id, name, symbol,
      *               coingecko_id, cryptoBalance, and dollarBalance
      */
-    public function getCryptoBalancesForUser(User $user): array
+    public function getCryptosOfUserWithBalance(User $user): array
     {
         $result = $this->createQueryBuilder('t')
             ->select('c.id, c.name, c.symbol, c.coingecko_id,

@@ -17,24 +17,24 @@ class DashboardService
     public function getCryptoBalances(User $user): array
     {
         $cryptoPrices = $this->coinGeckoService->getAllCryptoCurrentPrice();
-        $cryptoBalances = $this->transactionRepository->getCryptoBalancesForUser($user);
+        $cryptosData = $this->transactionRepository->getCryptosOfUserWithBalance($user);
 
-        return $this->calculateUpdatedCryptoBalances($cryptoBalances, $cryptoPrices);
+        return $this->enrichCryptoData($cryptosData, $cryptoPrices);
     }
 
-    private function calculateUpdatedCryptoBalances(array $cryptoBalances, array $cryptoPrices): array
+    private function enrichCryptoData(array $cryptosData, array $cryptoPrices): array
     {
-        $updatedCryptoBalances = [];
-        foreach ($cryptoBalances as $balance) {
-            if (isset($cryptoPrices[$balance['coingecko_id']])) {
-                $balance['currentPrice'] = $cryptoPrices[$balance['coingecko_id']];
-                $currentValue = $balance['cryptoBalance'] * $balance['currentPrice'];
-                $balance['profitPercentage'] = $this->calculateProfitPercentage($currentValue, $balance['dollarBalance']);
-                $balance['currentValue'] = $this->formatCurrentValue($currentValue);
-                $updatedCryptoBalances[] = $balance;
+        $enrichedCryptoData = [];
+        foreach ($cryptosData as $crypto) {
+            if (isset($cryptoPrices[$crypto['coingecko_id']])) {
+                $crypto['currentPrice'] = $cryptoPrices[$crypto['coingecko_id']];
+                $currentValue = $crypto['cryptoBalance'] * $crypto['currentPrice'];
+                $crypto['profitPercentage'] = $this->calculateProfitPercentage($currentValue, $crypto['dollarBalance']);
+                $crypto['currentValue'] = $this->formatCurrentValue($currentValue);
+                $enrichedCryptoData[] = $crypto;
             }
         }
-        return $updatedCryptoBalances;
+        return $enrichedCryptoData;
     }
 
     private function calculateProfitPercentage(float $currentValue, float $dollarBalance): float

@@ -16,6 +16,12 @@ class CoinGeckoService
         $this->cryptoRepository = $cryptoRepository;
     }
 
+    // For testing purposes
+    public function setClient($client)
+    {
+        $this->client = $client;
+    }
+
     public function getPing() {
         try {
             $response = $this->geckoApiCall("ping");

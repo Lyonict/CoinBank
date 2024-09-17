@@ -48,7 +48,9 @@ class TransactionRepository extends ServiceEntityRepository
             return null;
         }
 
-        return $result['buyAmount'] - $result['sellAmount'];
+        $netAmount = $result['buyAmount'] - $result['sellAmount'];
+
+        return $netAmount != 0.0 ? $netAmount : null;
     }
 
     /**

@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Enum\TransactionType;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CryptoTransactionService
@@ -16,19 +17,47 @@ class CryptoTransactionService
         private TransactionRepository $transactionRepository,
         private CoinGeckoService $coinGeckoService,
         private UserBankService $userBankService,
-        private TranslatorInterface $translator
+        private TranslatorInterface $translator,
+        private readonly LoggerInterface $logger
     ) {}
 
     public function createTransaction(Transaction $transaction, User $user): void
     {
         $cryptoPrices = $this->coinGeckoService->getAllCryptoCurrentPrice();
+        $this->logger->info('cryptoPrices', ['cryptoPrices' => $cryptoPrices]);
         $selectedCryptocurrency = $transaction->getCryptocurrency();
         $cryptoAmount = $transaction->getCryptoAmount();
+
+        // Check if cryptoPrices is set
+        if (isset($cryptoPrices) && !empty($cryptoPrices)) {
+            echo "cryptoPrices is set and not empty\n";
+            print_r($cryptoPrices);
+        } else {
+            echo "cryptoPrices is not set or empty\n";
+        }
+
+        // Log input data
+        echo "Creating transaction:\n";
+        echo "User ID: " . ($user ? $user->getId() : 'null') . "\n";
+        echo "Cryptocurrency: " . ($selectedCryptocurrency ? $selectedCryptocurrency->getName() : 'null') . "\n";
+        echo "Crypto Amount: " . $cryptoAmount . "\n";
+        echo "Transaction Type: " . $transaction->getTransactionType()->name . "\n";
+        echo "bidulos" . "\n";
+
+        if (!$selectedCryptocurrency) {
+            echo "no selected cryptocurrency" . "\n";
+            throw new \InvalidArgumentException("Cryptocurrency is not set");
+        }
+
         $moneyAmount = $cryptoPrices[$selectedCryptocurrency->getCoingeckoId()] * $cryptoAmount;
+        echo "Money amount " . $moneyAmount . "\n";
 
         if ($transaction->getTransactionType() === TransactionType::BUY) {
+            echo "Processing crypto buy transaction\n";
+            echo "User bank balance before: " . $user->getBank() . "\n";
             $this->userBankService->processCryptoBuy($user, $moneyAmount);
         } else {
+            echo "Processing crypto sell transaction\n";
             $this->userBankService->processCryptoSell($user, $selectedCryptocurrency, $cryptoAmount, $moneyAmount);
         }
 
@@ -38,6 +67,15 @@ class CryptoTransactionService
 
         $this->entityManager->persist($transaction);
         $this->entityManager->flush();
+
+        // Log transaction data
+        echo "Transaction created:\n";
+        echo "User: " . $user->getEmail() . "\n";
+        echo "Cryptocurrency: " . $selectedCryptocurrency->getName() . "\n";
+        echo "Type: " . $transaction->getTransactionType()->name . "\n";
+        echo "Crypto Amount: " . $cryptoAmount . "\n";
+        echo "Dollar Amount: $" . $moneyAmount . "\n";
+        echo "Date: " . $transaction->getDate()->format('Y-m-d H:i:s') . "\n";
     }
 
     public function getCryptoBalances(User $user): array

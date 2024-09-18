@@ -2,7 +2,11 @@
 
 namespace App\Tests;
 
+use App\Entity\Cryptocurrency;
+use App\Entity\Transaction;
 use App\Entity\User;
+use App\Service\CoinGeckoService;
+use App\Service\CryptoTransactionService;
 use App\Service\UserBankService;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Container\ContainerInterface;
@@ -26,15 +30,22 @@ abstract class BaseWebTestCase extends WebTestCase
     protected $client;
     protected $entityManager;
     protected $userRepository;
+    protected $transactionRepository;
     protected $defaultTestEmail;
-
+    protected $coinGeckoService;
+    protected $mockCoinGeckoService;
     protected function setUp(): void
     {
         parent::setUp();
         $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get('doctrine')->getManager();
         $this->userRepository = $this->entityManager->getRepository(User::class);
+        $this->transactionRepository = $this->entityManager->getRepository(Transaction::class);
         $this->defaultTestEmail = "test@example.com";
+
+        // Create and set up the mock CoinGeckoService
+        $this->mockCoinGeckoService = $this->mockCoinGeckoService();
+        $this->client->getContainer()->set(CoinGeckoService::class, $this->mockCoinGeckoService);
     }
 
     protected function tearDown(): void
@@ -71,6 +82,19 @@ abstract class BaseWebTestCase extends WebTestCase
         $this->entityManager->flush();
 
         return $user;
+    }
+
+    protected function createTestCryptocurrency(array $data = []): Cryptocurrency
+    {
+        $crypto = new Cryptocurrency();
+        $crypto->setName($data['name'] ?? 'Bitcoin');
+        $crypto->setCoingeckoId($data['coingeckoId'] ?? 'bitcoin');
+        $crypto->setSymbol($data['symbol'] ?? 'BTC');
+
+        $this->entityManager->persist($crypto);
+        $this->entityManager->flush();
+
+        return $crypto;
     }
 
     protected function assertUserProperties(array $expectedProperties, ?string $email = null): void
@@ -182,5 +206,26 @@ abstract class BaseWebTestCase extends WebTestCase
             });
 
         return $container;
+    }
+
+    protected function mockCoinGeckoService(): CoinGeckoService|MockObject
+    {
+        $mockCoinGeckoService = $this->createMock(CoinGeckoService::class);
+
+        $mockPrices = [
+            'bitcoin' => 30000.00,
+            'ethereum' => 2000.00,
+            'cardano' => 0.50,
+        ];
+
+        $mockCoinGeckoService->method('getAllCryptoCurrentPrice')
+            ->willReturn($mockPrices);
+
+        $mockCoinGeckoService->method('getCryptoCurrentPrice')
+            ->willReturnCallback(function ($coingeckoId) use ($mockPrices) {
+                return $mockPrices[$coingeckoId] ?? null;
+            });
+
+        return $mockCoinGeckoService;
     }
 }

@@ -5,6 +5,10 @@ namespace App\Tests\Controller;
 use App\Controller\UserController;
 use Symfony\Component\Form\FormFactoryInterface;
 use App\Entity\User;
+use App\Enum\TransactionType;
+use App\Repository\TransactionRepository;
+use App\Service\CoinGeckoService;
+use App\Service\CryptoTransactionService;
 use App\Service\UserBankService;
 use App\Tests\BaseWebTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -153,5 +157,44 @@ class UserControllerTest extends BaseWebTestCase
         $this->assertResponseRedirectsEventuallyTo('app_user_profile', ['_locale' => 'fr']);
 
         $this->assertUserProperties(['username'=>'new_username', 'preferedLocale'=>'fr'], 'new@example.com');
+    }
+
+    public function testCryptoFormAction(): void
+    {
+        $testUser = $this->createTestUser(['bank' => 100000]);
+        $this->client->loginUser($testUser);
+        $testCrypto = $this->createTestCryptocurrency();
+
+        // Mock the CoinGeckoService
+        $mockCoinGeckoService = $this->mockCoinGeckoService();
+
+        // Log the getAllCryptoCurrentPrice method of the mock CoinGeckoService
+        $allCryptoPrices = $mockCoinGeckoService->getAllCryptoCurrentPrice();
+        echo "Mock CoinGeckoService getAllCryptoCurrentPrice result:\n";
+        print_r($allCryptoPrices);
+
+        $crawler = $this->client->request('GET', '/en/user/crypto-form?crypto=' . $testCrypto->getCoingeckoId());
+
+        $this->assertResponseIsSuccessful();
+
+        $this->submitForm(
+            '/en/user/crypto-form?crypto=' . $testCrypto->getCoingeckoId(),
+            'Proceed',
+            [
+                'crypto_transaction_form[cryptocurrency]' => $testCrypto->getCoingeckoId(),
+                'crypto_transaction_form[cryptoAmount]' => '1',
+                'crypto_transaction_form[transactionType]' => 'buy'
+            ],
+        );
+
+        $transaction = $this->transactionRepository->findOneByUser($testUser);
+
+        if ($transaction) {
+            echo "Transaction found: " . $transaction->getId() . "\n";
+        } else {
+            echo "No transaction found\n";
+        }
+
+        $this->assertNotNull($transaction, 'Transaction was not created');
     }
 }

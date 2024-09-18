@@ -20,6 +20,27 @@ class TransactionRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retrieves a single transaction for a specific user.
+     *
+     * This method fetches one transaction from the database for the given user.
+     * It orders the transactions by date in descending order, so it will return
+     * the most recent transaction if multiple exist.
+     *
+     * @param User $user The user for whom to retrieve the transaction
+     * @return Transaction|null The most recent transaction for the user, or null if none found
+     */
+    public function findOneByUser(User $user): ?Transaction
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('t.date', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * Calculates the net amount of a specific cryptocurrency by its name.
      *
      * This method computes the difference between the total bought and sold amounts

@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -21,6 +24,9 @@ class ValidSponsorCodeValidatorTest extends TestCase
 
     /** @var TranslatorInterface&\PHPUnit\Framework\MockObject\MockObject */
     private TranslatorInterface $translator;
+
+    /** @var RequestStack&\PHPUnit\Framework\MockObject\MockObject */
+    private RequestStack $requestStack;
 
     /** @var ValidSponsorCodeValidator&\PHPUnit\Framework\MockObject\MockObject */
     private ValidSponsorCodeValidator $validator;
@@ -35,7 +41,11 @@ class ValidSponsorCodeValidatorTest extends TestCase
     {
         $this->userRepository = $this->createMock(UserRepository::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
-        $this->validator = new ValidSponsorCodeValidator($this->userRepository, $this->translator);
+        $this->requestStack = $this->createMock(RequestStack::class);
+        $request = new Request();
+        $request->attributes = new ParameterBag();
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->validator = new ValidSponsorCodeValidator($this->userRepository, $this->translator, $this->requestStack);
 
         $this->context = $this->createMock(ExecutionContextInterface::class);
         $this->violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);

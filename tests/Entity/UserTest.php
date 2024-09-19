@@ -48,7 +48,7 @@ class UserTest extends TestCase
 
         $roles = ['ROLE_ADMIN'];
         $this->user->setRoles($roles);
-        $this->assertEquals(['ROLE_ADMIN', 'ROLE_USER'], $this->user->getRoles());
+        $this->assertEquals(['ROLE_ADMIN'], $this->user->getRoles());
     }
 
     public function testPassword(): void

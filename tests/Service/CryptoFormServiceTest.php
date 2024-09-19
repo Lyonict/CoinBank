@@ -8,8 +8,10 @@ use App\Entity\User;
 use App\Repository\CryptocurrencyRepository;
 use App\Service\CryptoFormService;
 use App\Service\CryptoTransactionService;
+use App\Service\GlobalStateService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CryptoFormServiceTest extends TestCase
 {
@@ -21,15 +23,22 @@ class CryptoFormServiceTest extends TestCase
 
     /** @var CryptoFormService&\PHPUnit\Framework\MockObject\MockObject */
     private $cryptoFormService;
+    /** @var GlobalStateService&\PHPUnit\Framework\MockObject\MockObject */
+    private $globalStateService;
+    /** @var TranslatorInterface&\PHPUnit\Framework\MockObject\MockObject */
+    private $translator;
 
     protected function setUp(): void
     {
         $this->cryptocurrencyRepository = $this->createMock(CryptocurrencyRepository::class);
         $this->cryptoTransactionService = $this->createMock(CryptoTransactionService::class);
-
+        $this->globalStateService = $this->createMock(GlobalStateService::class);
+        $this->translator = $this->createMock(TranslatorInterface::class);
         $this->cryptoFormService = new CryptoFormService(
             $this->cryptocurrencyRepository,
-            $this->cryptoTransactionService
+            $this->cryptoTransactionService,
+            $this->globalStateService,
+            $this->translator
         );
     }
 

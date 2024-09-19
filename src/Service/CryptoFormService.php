@@ -30,6 +30,11 @@ class CryptoFormService
             if($this->globalStateService->isLockdown()) {
                 throw new \InvalidArgumentException($this->translator->trans('Lockdown is enabled : all transactions are disabled'));
             }
+
+            if ($user->getIsFrozen()) {
+                throw new \InvalidArgumentException($this->translator->trans('Your account is frozen : all transactions are disabled'));
+            }
+
             $transaction = $form->getData();
             try {
                 $this->cryptoTransactionService->createTransaction($transaction, $user);

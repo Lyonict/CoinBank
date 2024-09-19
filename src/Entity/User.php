@@ -75,10 +75,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $transactions;
 
+    #[Assert\NotNull()]
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private ?bool $isFrozen = false;
+
     public function __construct()
     {
         $this->sponsoredUsers = new ArrayCollection();
         $this->transactions = new ArrayCollection();
+        $this->isFrozen = false;
     }
 
     public function __toString(): string
@@ -279,6 +284,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $transaction->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsFrozen(): ?bool
+    {
+        return $this->isFrozen;
+    }
+
+    public function setIsFrozen(bool $isFrozen): static
+    {
+        $this->isFrozen = $isFrozen;
 
         return $this;
     }

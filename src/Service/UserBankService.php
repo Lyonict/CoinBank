@@ -26,6 +26,10 @@ class UserBankService
             throw new \InvalidArgumentException($this->translator->trans('Lockdown is enabled : all transactions are disabled'));
         }
 
+        if ($user->getIsFrozen()) {
+            throw new \InvalidArgumentException($this->translator->trans('Your account is frozen : all transactions are disabled'));
+        }
+
         if ($amount <= 0) {
             throw new \InvalidArgumentException($this->translator->trans('Amount must be a positive number.'));
         }

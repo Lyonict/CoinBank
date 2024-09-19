@@ -6,21 +6,24 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Uid\Uuid;
 
 class UserCrudController extends AbstractCrudController
 {
     private $passwordHasher;
-    public function __construct( UserPasswordHasherInterface $passwordHasher) {
+    private $translator;
+    public function __construct( UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator) {
         $this->passwordHasher = $passwordHasher;
+        $this->translator = $translator;
     }
 
     public static function getEntityFqcn(): string
@@ -84,6 +87,8 @@ class UserCrudController extends AbstractCrudController
                 ->hideOnIndex(),
             AssociationField::new('sponsor')
                 ->setFormTypeOption('choice_label', 'username'),
+            BooleanField::new('isFrozen')
+                ->setLabel($this->translator->trans('Is Frozen')),
             CollectionField::new('sponsoredUsers')
                 ->onlyOnDetail()
                 ->setFormTypeOption('by_reference', false),

@@ -5,6 +5,10 @@ namespace App\Controller\Admin;
 use App\Entity\Cryptocurrency;
 use App\Entity\Transaction;
 use App\Entity\User;
+use App\Service\GlobalStateService;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -15,10 +19,17 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class DashboardController extends AbstractDashboardController
 {
+    public function __construct(private GlobalStateService $globalStateService)
+    {
+    }
+
     #[Route('/{_locale}/admin', name: 'app_admin_dashboard')]
     public function index(): Response
     {
-        return $this->render('admin/index.html.twig');
+        $lockdownStatus = $this->globalStateService->isLockdown() ? 'Enabled' : 'Disabled';
+        return $this->render('admin/index.html.twig', [
+            'lockdownStatus' => $lockdownStatus,
+        ]);
         //return parent::index();
 
         // Option 1. You can make your dashboard redirect to some common page of your backend
@@ -38,6 +49,14 @@ class DashboardController extends AbstractDashboardController
         // return $this->render('some/path/my-dashboard.html.twig');
     }
 
+        public function configureActions(): Actions
+    {
+        return parent::configureActions()
+            ->add(Crud::PAGE_INDEX, Action::new('toggleLockdown', 'Toggle Lockdown')
+                ->linkToCrudAction('toggleLockdown')
+                ->addCssClass('btn btn-primary'));
+    }
+
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
@@ -50,5 +69,14 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Users', 'fas fa-users', User::class);
         yield MenuItem::linkToCrud('Cryptocurrencies', 'fas fa-coins', Cryptocurrency::class);
         yield MenuItem::linkToCrud('Transactions', 'fas fa-file-invoice', Transaction::class);
+    }
+
+    #[Route('/{_locale}/admin/toggle-lockdown', name: 'admin_toggle_lockdown')]
+    public function toggleLockdown(): Response
+    {
+        $currentState = $this->globalStateService->isLockdown();
+        $this->globalStateService->setLockdown(!$currentState);
+
+        return $this->redirectToRoute('app_admin_dashboard');
     }
 }

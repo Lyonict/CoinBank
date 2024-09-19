@@ -21,6 +21,10 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    App\Twig\AppExtension:
+        arguments:
+            $globalStateService: '@App\Service\GlobalStateService'
+        tags: ['twig.extension']
     App\EventListener\LocaleRedirectListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

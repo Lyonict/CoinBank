@@ -31,4 +31,9 @@
             </div>
         </div>
     </nav>
+    {% if is_lockdown() %}
+        <div class="alert alert-danger text-center mb-0">
+            {{'Lockdown is enabled : all transactions are disabled'|trans}}
+        </div>
+    {% endif %}
 </header>

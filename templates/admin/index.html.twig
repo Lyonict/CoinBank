@@ -1,3 +1,11 @@
 {# templates/admin/index.html.twig #}
 
 {% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content %}
+    <div>
+        <h1>Dashboard</h1>
+        <p>Lockdown Status: <span class="badge text-bg-{{ lockdownStatus == 'Enabled' ? 'danger' : 'success' }}">{{ lockdownStatus }}</span></p>
+        <a href="{{ path('admin_toggle_lockdown') }}" class="btn btn-primary">Toggle Lockdown</a>
+    </div>
+{% endblock %}

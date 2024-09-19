@@ -15,12 +15,17 @@ class UserBankService
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
         private readonly TransactionRepository $transactionRepository,
+        private readonly GlobalStateService $globalStateService,
     )
     {
     }
 
     public function updateUserBank(User $user, float $amount, string $bankTransactionMode): void
     {
+        if($this->globalStateService->isLockdown()) {
+            throw new \InvalidArgumentException($this->translator->trans('Lockdown is enabled : all transactions are disabled'));
+        }
+
         if ($amount <= 0) {
             throw new \InvalidArgumentException($this->translator->trans('Amount must be a positive number.'));
         }

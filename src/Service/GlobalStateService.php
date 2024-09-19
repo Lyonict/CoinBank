@@ -6,7 +6,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 class GlobalStateService
 {
-    private const LOCKDOWN_KEY = 'app_lockdown';
+    public const LOCKDOWN_KEY = 'app_lockdown';
 
     public function __construct(private CacheInterface $cache)
     {

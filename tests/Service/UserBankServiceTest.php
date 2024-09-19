@@ -17,6 +17,8 @@ class UserBankServiceTest extends TestCase
     private TranslatorInterface $translator;
     private UserBankService $userBankService;
     private TransactionRepository $transactionRepository;
+
+    /** @var GlobalStateService&\PHPUnit\Framework\MockObject\MockObject */
     private GlobalStateService $globalStateService;
     protected function setUp(): void
     {
@@ -46,6 +48,31 @@ class UserBankServiceTest extends TestCase
             'deposit' => [100, 50, 'deposit', 150],
             'withdraw' => [100, 50, 'withdraw', 50],
         ];
+    }
+
+    public function testUpdateUserBankWhileLockdown(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $user = new User();
+        $user->setBank(1000);
+
+        $this->globalStateService->expects($this->once())
+            ->method('isLockdown')
+            ->willReturn(true);
+
+        $this->userBankService->updateUserBank($user, 500, 'deposit');
+    }
+
+    public function testUpdateUserBankWhileUserIsFrozen(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $user = new User();
+        $user->setBank(1000);
+        $user->setIsFrozen(true);
+
+        $this->userBankService->updateUserBank($user, 500, 'deposit');
     }
 
     /**

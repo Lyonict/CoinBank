@@ -235,4 +235,30 @@ class CryptoTransactionServiceTest extends TestCase
 
         $this->assertNull($result);
     }
+
+    public function testCreateTransactionWithLockdown()
+    {
+        $user = new User();
+        $transaction = new Transaction();
+
+        $this->globalStateService->expects($this->once())
+            ->method('isLockdown')
+            ->willReturn(true);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->cryptoTransactionService->createTransaction($transaction, $user);
+    }
+
+    public function testCreateTransactionWithUserFrozen()
+    {
+        $user = new User();
+        $transaction = new Transaction();
+
+        $user->setIsFrozen(true);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->cryptoTransactionService->createTransaction($transaction, $user);
+    }
 }

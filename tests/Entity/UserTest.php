@@ -25,6 +25,16 @@ class UserTest extends TestCase
         $this->assertNull($newUser->getSponsorCode());
         $this->assertNull($newUser->getSponsor());
         $this->assertEmpty($newUser->getSponsoredUsers());
+        $this->assertFalse($newUser->getIsFrozen());
+    }
+
+    public function testToString(): void
+    {
+        $this->assertEquals('', $this->user->__toString());
+
+        $email = 'test@example.com';
+        $this->user->setEmail($email);
+        $this->assertEquals($email, $this->user->__toString());
     }
 
     public function testEmail(): void
@@ -146,5 +156,16 @@ class UserTest extends TestCase
         // Test that adding the same transaction twice doesn't duplicate it
         $this->user->addTransaction($transaction2);
         $this->assertCount(1, $this->user->getTransactions());
+    }
+
+    public function testIsFrozen(): void
+    {
+        $this->assertFalse($this->user->getIsFrozen());
+
+        $this->user->setIsFrozen(true);
+        $this->assertTrue($this->user->getIsFrozen());
+
+        $this->user->setIsFrozen(false);
+        $this->assertFalse($this->user->getIsFrozen());
     }
 }

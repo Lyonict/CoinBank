@@ -6,6 +6,8 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Validator\ValidSponsorCode;
 use App\Validator\ValidSponsorCodeValidator;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\CrudDto;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraint;

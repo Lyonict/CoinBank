@@ -68,3 +68,6 @@ Value: Value
 Evolution: Evolution
 'Estimated balance': 'Estimated balance'
 'No crypto in wallet': 'No crypto in wallet'
+'Is Frozen': 'Is Frozen'
+'Lockdown is enabled : all transactions are disabled': 'Lockdown is enabled : all transactions are disabled'
+'Your account is frozen : all transactions are disabled': 'Your account is frozen : all transactions are disabled'

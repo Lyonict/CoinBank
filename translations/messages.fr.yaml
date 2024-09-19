@@ -68,3 +68,6 @@ Value: Valeur
 Evolution: Évolution
 'Estimated balance': 'Solde estimé'
 'No crypto in wallet': 'Aucune crypto dans le portefeuille'
+'Is Frozen': 'Est gelé'
+'Lockdown is enabled : all transactions are disabled': 'Le verrouillage est activé : toutes les transactions sont désactivées'
+'Your account is frozen : all transactions are disabled': 'Votre compte est gelé : toutes les transactions sont désactivées'

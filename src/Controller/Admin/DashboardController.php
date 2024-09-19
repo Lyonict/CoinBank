@@ -49,14 +49,6 @@ class DashboardController extends AbstractDashboardController
         // return $this->render('some/path/my-dashboard.html.twig');
     }
 
-        public function configureActions(): Actions
-    {
-        return parent::configureActions()
-            ->add(Crud::PAGE_INDEX, Action::new('toggleLockdown', 'Toggle Lockdown')
-                ->linkToCrudAction('toggleLockdown')
-                ->addCssClass('btn btn-primary'));
-    }
-
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()

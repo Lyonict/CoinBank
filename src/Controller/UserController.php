@@ -48,10 +48,22 @@ class UserController extends AbstractController
     #[Route('', name: 'app_user_dashboard', methods: ['GET'])]
     public function index(CryptoTransactionService $cryptoTransactionService): Response
     {
-        $cryptoBalances = $cryptoTransactionService->getCryptoBalances($this->getAuthenticatedUser());
+        $cryptoBalances = [];
+        $error = null;
+
+        try {
+            $cryptoBalances = $cryptoTransactionService->getCryptoBalances($this->getAuthenticatedUser());
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'CoinGecko API key is not set') !== false) {
+                $error = $this->translator->trans('CoinGecko API key is not set. Please contact the administrator.');
+            } else {
+                $error = $this->translator->trans('An error occurred while fetching crypto data: ') . $e->getMessage();
+            }
+        }
 
         return $this->render('user/dashboard.html.twig', [
             'cryptoBalances' => $cryptoBalances,
+            'error' => $error,
         ]);
     }
 
@@ -76,11 +88,23 @@ class UserController extends AbstractController
         CryptoTransactionService $cryptoTransactionService,
         string $coingecko_id): Response
     {
-        $cryptoData = $cryptoTransactionService->getSingleCryptoBalance($this->getAuthenticatedUser(), $coingecko_id);
+        $cryptoData = null;
+        $error = null;
 
-        if (!$cryptoData) {
-            throw $this->createNotFoundException('Cryptocurrency not found');
+        try {
+            $cryptoData = $cryptoTransactionService->getSingleCryptoBalance($this->getAuthenticatedUser(), $coingecko_id);
+
+            if (!$cryptoData) {
+                throw $this->createNotFoundException('Cryptocurrency not found');
+            }
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'CoinGecko API key is not set') !== false) {
+                $error = $this->translator->trans('CoinGecko API key is not set. Please contact the administrator.');
+            } else {
+                $error = $this->translator->trans('An error occurred while fetching crypto data: ') . $e->getMessage();
+            }
         }
+
         $transactions = Pagerfanta::createForCurrentPageWithMaxPerPage(
             new QueryAdapter($transactionRepository->getTransactionsForUserAndCoinGeckoId($this->getAuthenticatedUser(), $coingecko_id)),
             $request->query->get('page', 1),
@@ -90,6 +114,7 @@ class UserController extends AbstractController
         return $this->render('user/transactions-crypto.html.twig', [
             'transactions' => $transactions,
             'cryptoData' => $cryptoData,
+            'error' => $error,
         ]);
     }
 

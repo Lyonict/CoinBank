@@ -50,22 +50,36 @@ class CryptoTransactionService
 
     public function getCryptoBalances(User $user): array
     {
-        $cryptoPrices = $this->coinGeckoService->getAllCryptoCurrentPrice();
-        $cryptosData = $this->transactionRepository->getCryptosOfUserWithBalance($user);
+        try {
+            $cryptoPrices = $this->coinGeckoService->getAllCryptoCurrentPrice();
+            $cryptosData = $this->transactionRepository->getCryptosOfUserWithBalance($user);
 
-        return $this->enrichCryptoData($cryptosData, $cryptoPrices);
+            return $this->enrichCryptoData($cryptosData, $cryptoPrices);
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'CoinGecko API key is not set') !== false) {
+                throw new \Exception('CoinGecko API key is not set', 0, $e);
+            }
+            throw new \Exception('Failed to get crypto balances: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     public function getSingleCryptoBalance(User $user, string $coingeckoId): ?array
     {
-        $cryptoPrice = $this->coinGeckoService->getCryptoCurrentPrice($coingeckoId);
-        $cryptoData = $this->transactionRepository->getCryptoBalanceForUserAndCrypto($user, $coingeckoId);
+        try {
+            $cryptoPrice = $this->coinGeckoService->getCryptoCurrentPrice($coingeckoId);
+            $cryptoData = $this->transactionRepository->getCryptoBalanceForUserAndCrypto($user, $coingeckoId);
 
-        if (!$cryptoData) {
-            return null;
+            if (!$cryptoData) {
+                return null;
+            }
+
+            return $this->enrichSingleCryptoData($cryptoData, $cryptoPrice);
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'CoinGecko API key is not set') !== false) {
+                throw new \Exception('CoinGecko API key is not set', 0, $e);
+            }
+            throw new \Exception('Failed to get crypto balance: ' . $e->getMessage(), 0, $e);
         }
-
-        return $this->enrichSingleCryptoData($cryptoData, $cryptoPrice);
     }
 
     private function enrichCryptoData(array $cryptoData, array $cryptoPrices): array

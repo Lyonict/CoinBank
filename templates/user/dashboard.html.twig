@@ -12,25 +12,29 @@
     <div class="CB-form-container-full my-md-3">
         <div class="card-body">
             <h1>{{ 'Dashboard'|trans }}</h1>
-            <div class="embed-responsive embed-responsive-16by9">
-            <!-- TradingView Widget BEGIN -->
-            <div class="tradingview-widget-container">
-                <div id="tradingview_12345" data-user-prefered-locale="{{app.user.preferedLocale}}"></div>
-            </div>
-            <!-- TradingView Widget END -->
-            </div>
-
-            <a href="{{path("app_user_crypto_form")}}" class="btn btn-dark w-100 my-3 d-flex justify-content-center align-items-center">{{ ux_icon('fa6-solid:wallet', {class: "me-2"}) }} {{'Buy/Sell'|trans}}</a>
-
-            {% if cryptoBalances|length > 0 %}
-                <div class="CB-crypto-info-container">
-                    {% include 'includes/block/CB_crypto-info_dashboard-header.html.twig' %}
-                    {% for crypto in cryptoBalances %}
-                        {% include 'includes/block/CB_crypto-info_dashboard.html.twig' with {data: crypto} %}
-                    {% endfor %}
-                </div>
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
             {% else %}
-                {% include 'includes/block/CB_crypto-info_empty-indicator.html.twig' with {message: 'No crypto in wallet'|trans} %}
+                <div class="embed-responsive embed-responsive-16by9">
+                <!-- TradingView Widget BEGIN -->
+                <div class="tradingview-widget-container">
+                    <div id="tradingview_12345" data-user-prefered-locale="{{app.user.preferedLocale}}"></div>
+                </div>
+                <!-- TradingView Widget END -->
+                </div>
+
+                <a href="{{path("app_user_crypto_form")}}" class="btn btn-dark w-100 my-3 d-flex justify-content-center align-items-center">{{ ux_icon('fa6-solid:wallet', {class: "me-2"}) }} {{'Buy/Sell'|trans}}</a>
+
+                {% if cryptoBalances|length > 0 %}
+                    <div class="CB-crypto-info-container">
+                        {% include 'includes/block/CB_crypto-info_dashboard-header.html.twig' %}
+                        {% for crypto in cryptoBalances %}
+                            {% include 'includes/block/CB_crypto-info_dashboard.html.twig' with {data: crypto} %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {% include 'includes/block/CB_crypto-info_empty-indicator.html.twig' with {message: 'No crypto in wallet'|trans} %}
+                {% endif %}
             {% endif %}
         </div>
 

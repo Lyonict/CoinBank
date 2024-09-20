@@ -28,24 +28,6 @@ class CoinGeckoServiceTest extends TestCase
         $this->coinGeckoService->setClient($client);
     }
 
-    public function testGetPing()
-    {
-        $this->mockHandler->append(new Response(200, [], json_encode(['gecko_says' => '(V3) To the Moon!'])));
-
-        $result = $this->coinGeckoService->getPing();
-
-        $this->assertTrue($result);
-    }
-
-    public function testGetPingFailure()
-    {
-        $this->mockHandler->append(new Response(500, []));
-
-        $result = $this->coinGeckoService->getPing();
-
-        $this->assertFalse($result);
-    }
-
     public function testGetAllCryptoCurrentPrice()
     {
         $this->mockHandler->append(new Response(200, [], json_encode(['gecko_says' => '(V3) To the Moon!'])));
@@ -62,13 +44,25 @@ class CoinGeckoServiceTest extends TestCase
         $this->assertEquals(['bitcoin' => 50000, 'ethereum' => 3000], $result);
     }
 
-    public function testGetAllCryptoCurrentPriceFailure()
+    public function testGetAllCryptoCurrentPriceWithApiKeyNotSet()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('CoinGecko API key is not set');
+
+        $coinGeckoService = new CoinGeckoService('', $this->cryptoRepository);
+        $coinGeckoService->setClient(new Client(['handler' => HandlerStack::create($this->mockHandler)]));
+
+        $coinGeckoService->getAllCryptoCurrentPrice();
+    }
+
+    public function testGetAllCryptoCurrentPriceWithApiNotResponding()
     {
         $this->mockHandler->append(new Response(500, []));
 
-        $result = $this->coinGeckoService->getAllCryptoCurrentPrice();
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('CoinGecko API is not responding');
 
-        $this->assertFalse($result);
+        $this->coinGeckoService->getAllCryptoCurrentPrice();
     }
 
     public function testGetCryptoCurrentPrice()
@@ -83,12 +77,24 @@ class CoinGeckoServiceTest extends TestCase
         $this->assertEquals(50000, $result);
     }
 
-    public function testGetCryptoCurrentPriceFailure()
+    public function testGetCryptoCurrentPriceWithApiKeyNotSet()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('CoinGecko API key is not set');
+
+        $coinGeckoService = new CoinGeckoService('', $this->cryptoRepository);
+        $coinGeckoService->setClient(new Client(['handler' => HandlerStack::create($this->mockHandler)]));
+
+        $coinGeckoService->getCryptoCurrentPrice('bitcoin');
+    }
+
+    public function testGetCryptoCurrentPriceWithApiNotResponding()
     {
         $this->mockHandler->append(new Response(500, []));
 
-        $result = $this->coinGeckoService->getCryptoCurrentPrice('bitcoin');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('CoinGecko API is not responding');
 
-        $this->assertFalse($result);
+        $this->coinGeckoService->getCryptoCurrentPrice('bitcoin');
     }
 }

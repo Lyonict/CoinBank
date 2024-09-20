@@ -13,6 +13,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Twig\Environment;
 
 class SecurityControllerTest extends TestCase
@@ -60,6 +61,26 @@ class SecurityControllerTest extends TestCase
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertTrue($response->isRedirect('/en/user'));
+    }
+
+    public function testLoginWithAuthenticatedAdminUser(): void
+    {
+        $user = $this->createMock(UserInterface::class);
+        $user->method('getRoles')->willReturn(['ROLE_ADMIN']);
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+
+        $this->tokenStorage->method('getToken')->willReturn($token);
+
+        $this->router->expects($this->once())
+            ->method('generate')
+            ->with('app_admin_dashboard')
+            ->willReturn('/en/admin');
+
+        $response = $this->controller->login($this->authenticationUtils);
+
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertTrue($response->isRedirect('/en/admin'));
     }
 
     public function testLoginWithoutAuthenticatedUser(): void

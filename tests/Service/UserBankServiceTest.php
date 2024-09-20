@@ -5,6 +5,7 @@ namespace App\Tests\Service;
 use App\Entity\Cryptocurrency;
 use App\Entity\User;
 use App\Repository\TransactionRepository;
+use App\Service\GlobalStateService;
 use App\Service\UserBankService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -17,12 +18,15 @@ class UserBankServiceTest extends TestCase
     private UserBankService $userBankService;
     private TransactionRepository $transactionRepository;
 
+    /** @var GlobalStateService&\PHPUnit\Framework\MockObject\MockObject */
+    private GlobalStateService $globalStateService;
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
         $this->transactionRepository = $this->createMock(TransactionRepository::class);
-        $this->userBankService = new UserBankService($this->entityManager, $this->translator, $this->transactionRepository);
+        $this->globalStateService = $this->createMock(GlobalStateService::class);
+        $this->userBankService = new UserBankService($this->entityManager, $this->translator, $this->transactionRepository, $this->globalStateService);
     }
 
     /**
@@ -44,6 +48,31 @@ class UserBankServiceTest extends TestCase
             'deposit' => [100, 50, 'deposit', 150],
             'withdraw' => [100, 50, 'withdraw', 50],
         ];
+    }
+
+    public function testUpdateUserBankWhileLockdown(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $user = new User();
+        $user->setBank(1000);
+
+        $this->globalStateService->expects($this->once())
+            ->method('isLockdown')
+            ->willReturn(true);
+
+        $this->userBankService->updateUserBank($user, 500, 'deposit');
+    }
+
+    public function testUpdateUserBankWhileUserIsFrozen(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $user = new User();
+        $user->setBank(1000);
+        $user->setIsFrozen(true);
+
+        $this->userBankService->updateUserBank($user, 500, 'deposit');
     }
 
     /**

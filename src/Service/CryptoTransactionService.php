@@ -16,11 +16,19 @@ class CryptoTransactionService
         private TransactionRepository $transactionRepository,
         private CoinGeckoService $coinGeckoService,
         private UserBankService $userBankService,
-        private TranslatorInterface $translator
+        private TranslatorInterface $translator,
+        private readonly GlobalStateService $globalStateService,
     ) {}
 
     public function createTransaction(Transaction $transaction, User $user): void
     {
+        if($this->globalStateService->isLockdown()) {
+            throw new \InvalidArgumentException($this->translator->trans('Lockdown is enabled : all transactions are disabled'));
+        }
+
+        if ($user->getIsFrozen()) {
+            throw new \InvalidArgumentException($this->translator->trans('Your account is frozen : all transactions are disabled'));
+        }
         $cryptoPrices = $this->coinGeckoService->getAllCryptoCurrentPrice();
         $selectedCryptocurrency = $transaction->getCryptocurrency();
         $cryptoAmount = $transaction->getCryptoAmount();

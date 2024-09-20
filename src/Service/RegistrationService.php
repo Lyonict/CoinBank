@@ -36,6 +36,7 @@ class RegistrationService
             $user->setBank(1000.0);
         };
         $user->setPreferedLocale($this->localeService->getPreferredLocale($request));
+        $user->setIsFrozen(false);
 
         // Handle sponsor code
         $sponsorCode = $formData['sponsorCode'];

@@ -16,6 +16,19 @@ class CryptocurrencyTest extends TestCase
         $this->cryptocurrency = new Cryptocurrency();
     }
 
+    public function testToString(): void
+    {
+        $cryptocurrency = new Cryptocurrency();
+
+        // Test when name is null
+        $this->assertEquals('', $cryptocurrency->__toString());
+
+        // Test when name is set
+        $name = 'Bitcoin';
+        $cryptocurrency->setName($name);
+        $this->assertEquals($name, $cryptocurrency->__toString());
+    }
+
     public function testId(): void
     {
         $this->assertNull($this->cryptocurrency->getId());

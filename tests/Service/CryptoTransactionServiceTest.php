@@ -9,6 +9,7 @@ use App\Enum\TransactionType;
 use App\Repository\TransactionRepository;
 use App\Service\CryptoTransactionService;
 use App\Service\CoinGeckoService;
+use App\Service\GlobalStateService;
 use App\Service\UserBankService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -31,6 +32,9 @@ class CryptoTransactionServiceTest extends TestCase
     /** @var TranslatorInterface&\PHPUnit\Framework\MockObject\MockObject */
     private $translator;
 
+    /** @var GlobalStateService&\PHPUnit\Framework\MockObject\MockObject */
+    private $globalStateService;
+
     private CryptoTransactionService $cryptoTransactionService;
 
     protected function setUp(): void
@@ -40,13 +44,14 @@ class CryptoTransactionServiceTest extends TestCase
         $this->coinGeckoService = $this->createMock(CoinGeckoService::class);
         $this->userBankService = $this->createMock(UserBankService::class);
         $this->translator = $this->createMock(TranslatorInterface::class);
-
+        $this->globalStateService = $this->createMock(GlobalStateService::class);
         $this->cryptoTransactionService = new CryptoTransactionService(
             $this->entityManager,
             $this->transactionRepository,
             $this->coinGeckoService,
             $this->userBankService,
-            $this->translator
+            $this->translator,
+            $this->globalStateService
         );
     }
 
@@ -229,5 +234,31 @@ class CryptoTransactionServiceTest extends TestCase
         $result = $this->cryptoTransactionService->getSingleCryptoBalance($user, $coingeckoId);
 
         $this->assertNull($result);
+    }
+
+    public function testCreateTransactionWithLockdown()
+    {
+        $user = new User();
+        $transaction = new Transaction();
+
+        $this->globalStateService->expects($this->once())
+            ->method('isLockdown')
+            ->willReturn(true);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->cryptoTransactionService->createTransaction($transaction, $user);
+    }
+
+    public function testCreateTransactionWithUserFrozen()
+    {
+        $user = new User();
+        $transaction = new Transaction();
+
+        $user->setIsFrozen(true);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->cryptoTransactionService->createTransaction($transaction, $user);
     }
 }

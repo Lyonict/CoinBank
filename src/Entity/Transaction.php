@@ -21,7 +21,7 @@ class Transaction
     #[ORM\Column]
     private ?\DateTimeImmutable $date = null;
 
-    #[ORM\ManyToOne(inversedBy: 'transactions')]
+    #[ORM\ManyToOne(inversedBy: 'transactions', targetEntity: Cryptocurrency::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Cryptocurrency $cryptocurrency = null;
 
@@ -29,7 +29,7 @@ class Transaction
     #[ORM\Column]
     private ?float $cryptoAmount = null;
 
-    #[ORM\ManyToOne(inversedBy: 'transactions')]
+    #[ORM\ManyToOne(inversedBy: 'transactions', targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 

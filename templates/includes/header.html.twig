@@ -31,4 +31,13 @@
             </div>
         </div>
     </nav>
+    {% if is_lockdown() or (is_granted('IS_AUTHENTICATED_FULLY') and app.user.isFrozen) %}
+        <div class="alert alert-danger text-center mb-0">
+        {% if is_lockdown() %}
+            {{'Lockdown is enabled : all transactions are disabled'|trans}}
+        {% elseif app.user.isFrozen %}
+            {{'Your account is frozen : all transactions are disabled'|trans}}
+        {% endif %}
+        </div>
+    {% endif %}
 </header>

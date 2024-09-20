@@ -75,10 +75,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $transactions;
 
+    #[Assert\NotNull()]
+    #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
+    private ?bool $isFrozen = false;
+
     public function __construct()
     {
         $this->sponsoredUsers = new ArrayCollection();
         $this->transactions = new ArrayCollection();
+        $this->isFrozen = false;
+    }
+
+    public function __toString(): string
+    {
+        return $this->email ?? '';
     }
 
     public function getId(): ?int
@@ -116,8 +126,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        // Add ROLE_USER only if the user doesn't have ROLE_ADMIN
+        if (!in_array('ROLE_ADMIN', $roles, true)) {
+            $roles[] = 'ROLE_USER';
+        }
 
         return array_unique($roles);
     }
@@ -272,6 +284,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $transaction->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsFrozen(): ?bool
+    {
+        return $this->isFrozen;
+    }
+
+    public function setIsFrozen(bool $isFrozen): static
+    {
+        $this->isFrozen = $isFrozen;
 
         return $this;
     }

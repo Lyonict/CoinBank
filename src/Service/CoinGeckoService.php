@@ -75,7 +75,7 @@ class CoinGeckoService
         }
     }
 
-    private function getPing() {
+    public function getPing() {
         try {
             $response = $this->geckoApiCall("ping");
 

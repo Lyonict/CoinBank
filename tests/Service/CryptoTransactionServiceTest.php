@@ -149,6 +149,34 @@ class CryptoTransactionServiceTest extends TestCase
         $this->assertEquals('30.00k', $result[1]['formattedCurrentValue']);
     }
 
+    public function testGetCryptoBalancesWithApiKeyNotSet()
+    {
+        $user = new User();
+
+        $this->coinGeckoService->expects($this->once())
+            ->method('getAllCryptoCurrentPrice')
+            ->willThrowException(new \Exception('CoinGecko API key is not set'));
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('CoinGecko API key is not set');
+
+        $this->cryptoTransactionService->getCryptoBalances($user);
+    }
+
+    public function testGetCryptoBalancesWithOtherException()
+    {
+        $user = new User();
+
+        $this->coinGeckoService->expects($this->once())
+            ->method('getAllCryptoCurrentPrice')
+            ->willThrowException(new \Exception('Some other error'));
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Failed to get crypto balances: Some other error');
+
+        $this->cryptoTransactionService->getCryptoBalances($user);
+    }
+
     public function testGetSingleCryptoBalanceThousands()
     {
         $user = new User();
@@ -234,6 +262,36 @@ class CryptoTransactionServiceTest extends TestCase
         $result = $this->cryptoTransactionService->getSingleCryptoBalance($user, $coingeckoId);
 
         $this->assertNull($result);
+    }
+
+    public function testGetSingleCryptoBalanceWithApiKeyNotSet()
+    {
+        $user = new User();
+        $coingeckoId = 'bitcoin';
+
+        $this->coinGeckoService->expects($this->once())
+            ->method('getCryptoCurrentPrice')
+            ->willThrowException(new \Exception('CoinGecko API key is not set'));
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('CoinGecko API key is not set');
+
+        $this->cryptoTransactionService->getSingleCryptoBalance($user, $coingeckoId);
+    }
+
+    public function testGetSingleCryptoBalanceWithOtherException()
+    {
+        $user = new User();
+        $coingeckoId = 'bitcoin';
+
+        $this->coinGeckoService->expects($this->once())
+            ->method('getCryptoCurrentPrice')
+            ->willThrowException(new \Exception('Some other error'));
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Failed to get crypto balance: Some other error');
+
+        $this->cryptoTransactionService->getSingleCryptoBalance($user, $coingeckoId);
     }
 
     public function testCreateTransactionWithLockdown()

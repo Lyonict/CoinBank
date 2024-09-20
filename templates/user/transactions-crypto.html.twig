@@ -11,24 +11,28 @@
 {% block content %}
     <div class="CB-form-container-full my-md-3">
         <div class="card-body">
-            <h1>{{ cryptoData.name }}</h1>
-            <div class="d-flex flex-column flex-md-row-reverse justify-content-between border rounded p-3">
-                {% include 'includes/block/CB_crypto-info_transaction-cryptowidget.html.twig' with {cryptoData: cryptoData} %}
-                <div class="d-flex flex-column">
-                    <b>{{ 'Estimated balance'|trans }}</b>
-                    <h3>{{ cryptoData.cryptoBalance }} {{ cryptoData.symbol }}</h3>
-                    <h3>${{ cryptoData.currentValue }}</h3>
-                    <div class="CB-crypto-info-profit {% if cryptoData.profitPercentage > 0 %}text-success{% elseif cryptoData.profitPercentage < 0 %}text-danger{% endif %}">
-                        {% if cryptoData.profitPercentage > 0 %}
-                            {{ ux_icon('carbon:growth', {class: 'ms-1'}) }}
-                        {% elseif cryptoData.profitPercentage < 0 %}
-                            {{ ux_icon('streamline:graph-arrow-decrease', {class: 'ms-1'}) }}
-                        {% endif %}
-                        <small>{% if cryptoData.profitPercentage == 0 %}-{% else %}{{cryptoData.profitPercentage}}%{% endif %}</small>
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% else %}
+                <h1>{{ cryptoData.name }}</h1>
+                <div class="d-flex flex-column flex-md-row-reverse justify-content-between border rounded p-3">
+                    {% include 'includes/block/CB_crypto-info_transaction-cryptowidget.html.twig' with {cryptoData: cryptoData} %}
+                    <div class="d-flex flex-column">
+                        <b>{{ 'Estimated balance'|trans }}</b>
+                        <h3>{{ cryptoData.cryptoBalance }} {{ cryptoData.symbol }}</h3>
+                        <h3>${{ cryptoData.currentValue }}</h3>
+                        <div class="CB-crypto-info-profit {% if cryptoData.profitPercentage > 0 %}text-success{% elseif cryptoData.profitPercentage < 0 %}text-danger{% endif %}">
+                            {% if cryptoData.profitPercentage > 0 %}
+                                {{ ux_icon('carbon:growth', {class: 'ms-1'}) }}
+                            {% elseif cryptoData.profitPercentage < 0 %}
+                                {{ ux_icon('streamline:graph-arrow-decrease', {class: 'ms-1'}) }}
+                            {% endif %}
+                            <small>{% if cryptoData.profitPercentage == 0 %}-{% else %}{{cryptoData.profitPercentage}}%{% endif %}</small>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <a href="{{path("app_user_crypto_form", {'crypto': cryptoData.coingecko_id})}}" class="btn btn-dark w-100 my-3 d-flex justify-content-center align-items-center">{{ ux_icon('fa6-solid:wallet', {class: "me-2"}) }} {{'Buy/Sell'|trans}}</a>
+                <a href="{{path("app_user_crypto_form", {'crypto': cryptoData.coingecko_id})}}" class="btn btn-dark w-100 my-3 d-flex justify-content-center align-items-center">{{ ux_icon('fa6-solid:wallet', {class: "me-2"}) }} {{'Buy/Sell'|trans}}</a>
+            {% endif %}
             {% include 'includes/block/CB_crypto-info_transactions.html.twig' with {transactions: transactions} %}
             {{ pagerfanta(transactions, 'twitter_bootstrap5') }}
         </div>

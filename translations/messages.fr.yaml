@@ -71,3 +71,5 @@ Evolution: Évolution
 'Is Frozen': 'Est gelé'
 'Lockdown is enabled : all transactions are disabled': 'Le verrouillage est activé : toutes les transactions sont désactivées'
 'Your account is frozen : all transactions are disabled': 'Votre compte est gelé : toutes les transactions sont désactivées'
+'CoinGecko API key is not set.': 'La clé API CoinGecko n''est pas définie.'
+'An error occurred while fetching crypto data: ': 'Une erreur s''est produite lors de la récupération des données crypto : '

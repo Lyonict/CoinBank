@@ -55,7 +55,7 @@ class UserController extends AbstractController
             $cryptoBalances = $cryptoTransactionService->getCryptoBalances($this->getAuthenticatedUser());
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'CoinGecko API key is not set') !== false) {
-                $error = $this->translator->trans('CoinGecko API key is not set. Please contact the administrator.');
+                $error = $this->translator->trans('CoinGecko API key is not set.');
             } else {
                 $error = $this->translator->trans('An error occurred while fetching crypto data: ') . $e->getMessage();
             }
@@ -99,7 +99,7 @@ class UserController extends AbstractController
             }
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'CoinGecko API key is not set') !== false) {
-                $error = $this->translator->trans('CoinGecko API key is not set. Please contact the administrator.');
+                $error = $this->translator->trans('CoinGecko API key is not set.');
             } else {
                 $error = $this->translator->trans('An error occurred while fetching crypto data: ') . $e->getMessage();
             }

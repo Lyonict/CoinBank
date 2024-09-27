@@ -174,13 +174,23 @@ class UserController extends AbstractController
         CoinGeckoService $coinGeckoService
     ): Response
     {
+        $error = null;
+        $cryptoPrices = [];
         $form = $this->createForm(CryptoTransactionFormType::class);
         // Automatically select the cryptocurrency if the coingecko_id is provided
         $cryptoFormService->handleCryptoSelection($form, $request->query->get('crypto'));
 
         $form->handleRequest($request);
 
-        $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();
+        try {
+            $cryptoPrices = $coinGeckoService->getAllCryptoCurrentPrice();
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'CoinGecko API key is not set') !== false) {
+                $error = $this->translator->trans('CoinGecko API key is not set.');
+            } else {
+                $error = $this->translator->trans('An error occurred while fetching crypto data: ') . $e->getMessage();
+            }
+        }
 
         try {
             if ($cryptoFormService->processForm($form, $this->getAuthenticatedUser())) {
@@ -195,6 +205,7 @@ class UserController extends AbstractController
         return $this->render('user/crypto-form.html.twig', [
             'cryptoForm'=> $form,
             'cryptoPrices'=> $cryptoPrices,
+            'error' => $error,
         ]);
     }
 }

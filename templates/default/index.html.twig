@@ -3,18 +3,11 @@
 {% block title %}Hello DefaultController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/charles/source/CoinBank/src/Controller/DefaultController.php</code></li>
-        <li>Your template at <code>/Users/charles/source/CoinBank/templates/default/index.html.twig</code></li>
-    </ul>
-</div>
+    <div class="p-5 m-4 bg-body-tertiary rounded-3">
+        <h1 class="display-5 fw-bold">Coinbank</h1>
+        <p class="fs-4">
+            {{'Take your first step into the exciting world of cryptocurrencies. Buy, sell, and trade digital assets effortlessly, with cutting-edge tools and real-time market data at your fingertips. Whether you\'re a seasoned trader or just starting out, we\'ve got everything you need to master the crypto market.'|trans}}
+        </p>
+        <a href="{{path("app_register")}}" class="btn btn-primary">{{'Get started now'|trans}}</a>
+    </div>
 {% endblock %}

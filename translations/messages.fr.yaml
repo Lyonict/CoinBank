@@ -71,5 +71,7 @@ Evolution: Évolution
 'Is Frozen': 'Est gelé'
 'Lockdown is enabled : all transactions are disabled': 'Le verrouillage est activé : toutes les transactions sont désactivées'
 'Your account is frozen : all transactions are disabled': 'Votre compte est gelé : toutes les transactions sont désactivées'
-'CoinGecko API key is not set.': 'La clé API CoinGecko n''est pas définie.'
-'An error occurred while fetching crypto data: ': 'Une erreur s''est produite lors de la récupération des données crypto : '
+'CoinGecko API key is not set.': "La clé API CoinGecko n'est pas définie."
+'An error occurred while fetching crypto data: ': "Une erreur s'est produite lors de la récupération des données crypto : "
+"Take your first step into the exciting world of cryptocurrencies. Buy, sell, and trade digital assets effortlessly, with cutting-edge tools and real-time market data at your fingertips. Whether you're a seasoned trader or just starting out, we've got everything you need to master the crypto market.": "Faites vos premiers pas dans le monde passionnant des cryptomonnaies. Achetez, vendez et échangez des actifs numériques en toute simplicité, avec des outils de pointe et des données de marché en temps réel à portée de main. Que vous soyez un trader expérimenté ou débutant, nous avons tout ce qu'il vous faut pour maîtriser le marché des cryptos."
+'Get started now': 'Commencez maintenant'
